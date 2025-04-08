@@ -1,92 +1,79 @@
-#ifdef _APPLE_
-#include <GLUT/glut.h>
-#else
 #include <GL/glut.h>
-#endif
+#include <cmath>
 
-#include <stdlib.h>
-
-float amarillo[3]     = {1, 1, 0},
-      rojo[3]         = {1, 0, 0}, 
-      verde[3]        = {0, 1, 0}, 
-      azul[3]         = {0, 0, 1},
-      cyan[3]         = {0, 1, 1},
-      magenta[3]      = {1, 0, 1},
-      blanco[3]       = {1, 1, 1},
-      gris[3]         = {0.5f, 0.5f, 0.5f},
-      naranja[3]      = {1, 0.647f, 0},
-      rosa[3]         = {1, 0.75f, 0.8f},
-      marron[3]       = {0.6f, 0.3f, 0},
-      verde_oscuro[3] = {0, 0.5f, 0},
-      azul_oscuro[3]  = {0, 0, 0.5f},
-      aqua[3]         = {0, 1, 0.5f}; 
-
-
-
-
-void cuadrado (float c[2], float l, float *RGB, GLenum MODO){
-    float x = c[0], y=c[1];
-    glColor3fv(RGB);
-    glBegin(MODO);
-        glVertex2f(x,y);
-        glVertex2f(x+l,y);
-        glVertex2f(x+l,y+l);
-        glVertex2f(x,y+l);
+void drawSquare() {
+    glColor3f(1.0f, 0.0f, 0.0f); // Rojo
+    glBegin(GL_QUADS);
+        glVertex2f(-0.8f, 0.2f);
+        glVertex2f(-0.4f, 0.2f);
+        glVertex2f(-0.4f, 0.6f);
+        glVertex2f(-0.8f, 0.6f);
     glEnd();
 }
 
-// Función de inicialización de OpenGL
-void initialize()
-{   
-    int a = 10;
-    glMatrixMode(GL_PROJECTION);
-    gluOrtho2D(-a, a, -a, a); 
-    glClearColor(0, 0, 0, 0);
+void drawTriangle() {
+    glColor3f(0.0f, 1.0f, 0.0f); // Verde
+    glBegin(GL_TRIANGLES);
+        glVertex2f(0.0f, 0.2f);
+        glVertex2f(0.3f, 0.6f);
+        glVertex2f(-0.3f, 0.6f);
+    glEnd();
 }
 
+void drawStar() {
+    glColor3f(0.0f, 0.0f, 1.0f); // Azul
+    glBegin(GL_LINE_LOOP);
+        glVertex2f(0.7f, 0.6f);
+        glVertex2f(0.75f, 0.4f);
+        glVertex2f(0.9f, 0.4f);
+        glVertex2f(0.78f, 0.3f);
+        glVertex2f(0.83f, 0.1f);
+        glVertex2f(0.7f, 0.2f);
+        glVertex2f(0.57f, 0.1f);
+        glVertex2f(0.62f, 0.3f);
+        glVertex2f(0.5f, 0.4f);
+        glVertex2f(0.65f, 0.4f);
+    glEnd();
+}
 
-// Función de renderizado
-void display (void)
-{
-    // Color de Pantalla
-    glClearColor(0, 0.1, 0.1, 0);
+void drawFan() {
+    glBegin(GL_TRIANGLE_FAN);
+        glColor3f(1.0f, 1.0f, 0.0f); // Centro amarillo
+        glVertex2f(-0.2f, -0.3f);
+        for (int i = 0; i <= 10; i++) {
+            float angle = i * 2.0f * 3.14159f / 10;
+            float x = -0.2f + 0.2f * cos(angle);
+            float y = -0.3f + 0.2f * sin(angle);
+            glColor3f((i % 3 == 0), (i % 3 == 1), (i % 3 == 2)); // Colores variados
+            glVertex2f(x, y);
+        }
+    glEnd();
+}
+
+void display() {
     glClear(GL_COLOR_BUFFER_BIT);
-    
-    cuadrado((float[2]){-8,6}, 2, amarillo, GL_POINTS);
-    cuadrado((float[2]){-5,6}, 2, rojo,     GL_LINES);
-    cuadrado((float[2]){-2,6}, 2, verde,    GL_LINE_STRIP);
-    cuadrado((float[2]){1,6},  2, azul,     GL_LINE_LOOP);
-    cuadrado((float[2]){4,6},  2, cyan,     GL_TRIANGLES);
-    cuadrado((float[2]){-8,3}, 2, magenta,  GL_TRIANGLE_STRIP);
-    cuadrado((float[2]){-5,3}, 2, blanco,   GL_TRIANGLE_FAN);
-    cuadrado((float[2]){-2,3}, 2, gris,     GL_QUADS);
-    cuadrado((float[2]){1,3},  2, naranja,  GL_QUAD_STRIP);
-    cuadrado((float[2]){4,3},  2, rosa,     GL_POLYGON);
 
-    /*Tamanio de Lineas o Puntos*/
-    glPointSize(5);
-    glLineWidth(5);
+    drawSquare();
+    drawTriangle();
+    drawStar();
+    drawFan();
 
-
-    glutSwapBuffers();
+    glFlush();
 }
 
-// Función principal
-int main(int argc, char *argv[])
-{   
-    int size = 400;
-    
+void init() {
+    glClearColor(1, 1, 1, 1);
+    glPointSize(5);
+    glLineWidth(2);
+}
+
+int main(int argc, char **argv) {
     glutInit(&argc, argv);
-    glutInitWindowSize(size, size);
-    glutInitWindowPosition(10, 10);
-    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-    glutCreateWindow("Primera Clase");
-
-    initialize();
-
+    glutCreateWindow("Figuras Coloridas con OpenGL");
+    glutInitWindowSize(800, 600);
+    glutInitWindowPosition(100, 100);
+    init();
     glutDisplayFunc(display);
-
     glutMainLoop();
-
-    return EXIT_SUCCESS; 
+    return 0;
 }

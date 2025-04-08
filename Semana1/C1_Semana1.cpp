@@ -1,201 +1,60 @@
-#ifdef _APPLE_
+#ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
 #include <GL/glut.h>
 #endif
 
 #include <stdlib.h>
-// Función de inicialización de OpenGL
-void initialize()
-{   
-    int a = 8;
-    
-    glMatrixMode(GL_PROJECTION);
-    gluOrtho2D(-a, a, -a, a); 
-    glClearColor(0, 0, 0, 0);
 
-}
-
-// Función de renderizado
-void display (void)
+void inicio()
 {
-    // Color de Pantalla
-    glClearColor(0, 0.1, 0.1, 0);
-    glClear(GL_COLOR_BUFFER_BIT);
-    
-    /*Tamanio de Lineas o Puntos*/
-    glPointSize(5);
-    glLineWidth(5);
-
-    /* glBegin(MODO):
-        GL_POINTS
-        1) GL_LINES
-        2) GL_LINE_STRIP
-        3) GL_LINE_LOOP
-        4) GL_TRIANGLES
-        ) GL_TRIANGLE_STRIP
-        ) GL_TRIANGLE_FAN
-        ) GL_QUADS
-        ) GL_QUAD_STRIP
-        ) GL_POLYGON 
-    */
-   /*
-   
-    // Uno
-    glColor3f(0,0,1);
-    glBegin(GL_LINES);
-        glVertex2f(-4,3);
-        glVertex2f(-4,4);
-    glEnd();
-
-    glColor3f(0,1,0);
-    glBegin(GL_POINTS);
-        glVertex2f(-4,3);
-        glVertex2f(-4,4);
-    glEnd();
-
-    // Dos
-    glColor3f(1,0,0);
-    glBegin(GL_LINE_STRIP);
-        glVertex2f(-3,3);
-        glVertex2f(-3,4);
-        glVertex2f(-2.5,3.5);
-    glEnd();
-    glColor3f(0,1,0);
-    glBegin(GL_POINTS);
-        glVertex2f(-3,3);
-        glVertex2f(-3,4);
-        glVertex2f(-2.5,3.5);
-    glEnd();
-    
-    // tres
-    glColor3f(1,0,0);
-    glBegin(GL_LINE_LOOP);
-        glVertex2f(-2,3);
-        glVertex2f(-2,4);
-        glVertex2f(-1,3.5);
-    glEnd();
-    glColor3f(0,1,0);
-    glBegin(GL_POINTS);
-        glVertex2f(-2,3);
-        glVertex2f(-2,4);
-        glVertex2f(-1,3.5);
-    glEnd();
-    
-   // cuatro
-   glColor3f(1,0,0);
-   glBegin(GL_TRIANGLES);
-       glVertex2f(-4,2);
-       glVertex2f(-4,1);
-       glVertex2f(-3.5,1.5);
-   glEnd();
-   glColor3f(0,1,0);
-   glBegin(GL_POINTS);
-        glVertex2f(-4,2);
-        glVertex2f(-4,1);
-        glVertex2f(-3.5,1.5);
-   glEnd();
-
-   // cinco
-   glColor3f(1,0,0);
-   glBegin(GL_TRIANGLE_STRIP);
-       glVertex2f(-1,-1);
-       glVertex2f(-1,-2);
-       glVertex2f(-.5,-3);
-       glVertex2f(0,-4);
-   glEnd();
-
-   glColor3f(0,1,0);
-   glBegin(GL_POINTS);
-        glVertex2f(-1,-1);
-        glVertex2f(-1,-2);
-        glVertex2f(-.5,-3);
-        glVertex2f(0,-4);
-   glEnd();
-   */
-
-    glColor3f(0,0,1);
-    glBegin(GL_POLYGON);
-        glVertex2f(-7,7);
-        glVertex2f(-4,7);
-        glVertex2f(-4,4);
-        glVertex2f(-7,4);
-    glEnd();
-
-    glColor3f(0,1,0);
-    glBegin(GL_POLYGON);
-        glVertex2f(-2,7);
-        glVertex2f(1,7);
-        glVertex2f(1,4);
-        glVertex2f(-2,4);
-    glEnd();
-
-    glColor3f(1,0,0);
-    glBegin(GL_POLYGON);
-        glVertex2f(3,7);
-        glVertex2f(6,7);
-        glVertex2f(6,4);
-        glVertex2f(3,4);
-    glEnd();
-
-    ///
-    glColor3f(1,0,0);
-    glBegin(GL_POLYGON);
-        glVertex2f(-7,1);
-        glVertex2f(-4,1);
-        glVertex2f(-4,-2);
-        glVertex2f(-7,-2);
-    glEnd();
-
-    glColor3f(0,0,1);
-    glBegin(GL_POLYGON);
-        glVertex2f(-2,1);
-        glVertex2f(1,1);
-        glVertex2f(1,-2);
-        glVertex2f(-2,-2);
-    glEnd();
-
-    glColor3f(0,1,0);
-    glBegin(GL_POLYGON);
-        glVertex2f(3,1);
-        glVertex2f(6,1);
-        glVertex2f(6,-2);
-        glVertex2f(3,-2);
-    glEnd();
-
-    glutSwapBuffers();
+    glMatrixMode(GL_PROJECTION);
+    gluOrtho2D(-1,1,-1,1);
+    glClearColor(0,0,0,0);
 }
 
-// Función principal
+void display(void) {
+    glClearColor(0, 0, 0, 0);  // Fondo negro
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    int grid_size = 8;  // Tamaño del tablero de ajedrez (8x8)
+    float board_size = 1.0f;  // Tamaño total del tablero
+
+    // Dibujar las líneas horizontales
+    glColor3f(1.0f, 1.0f, 1.0f);  // Color blanco para las líneas
+
+    for (int i = 0; i <= grid_size; i++) {
+        float y = -0.5f + (i * (board_size / grid_size));  // Posición Y de la línea horizontal
+        glBegin(GL_LINES);
+            glVertex2f(-0.5f, y);  // Esquina izquierda
+            glVertex2f(0.5f, y);   // Esquina derecha
+        glEnd();
+    }
+
+    // Dibujar las líneas verticales
+    for (int i = 0; i <= grid_size; i++) {
+        float x = -0.5f + (i * (board_size / grid_size));  // Posición X de la línea vertical
+        glBegin(GL_LINES);
+            glVertex2f(x, -0.5f);  // Esquina inferior
+            glVertex2f(x, 0.5f);   // Esquina superior
+        glEnd();
+    }
+
+    glutSwapBuffers();  // Intercambiar los buffers para mostrar el resultado
+}
+
 int main(int argc, char *argv[])
-{   
-    int size = 400;
-    // Inicializa GLUT y procesa los argumentos de la línea de comandos
-    glutInit(&argc, argv);
+{
+    glutInit(&argc, argv); // Inicializa la ventana de Opengl
+    glutInitWindowSize(400,400);// tamaño de la ventana
+    glutInitWindowPosition(10,10);// posicion de la ventana
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);// Especifica el tipo de modo de visualizacion al creae una ventana (activar el buffer de color RGB)
 
-    glutInitWindowSize(size, size);
 
-    // Define la posición inicial de la ventana en la pantalla (coordenadas X=10, Y=10)
-    glutInitWindowPosition(10, 10);
+    glutCreateWindow("ComputaciOn Grafica 1.2");//Nombre que se le da ala pantalla
+    inicio();
+    glutDisplayFunc(display);// nombre de la funcion
+    glutMainLoop();// hace que aparezca la ventana
 
-    // Establece el modo de visualización:
-    // - `GLUT_RGB`: Usa el modelo de color RGB
-    // - `GLUT_DOUBLE`: Activa el doble buffer para evitar parpadeos
-    // - `GLUT_DEPTH`: Activa el buffer de profundidad (aunque no se usa en este código)
-    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-
-    // Crea una ventana con el título "primer codigo"
-    glutCreateWindow("Primera Clase");
-
-    // Llama a la función de inicialización
-    initialize();
-
-    // Asigna la función `display()` como la encargada de dibujar la escena
-    glutDisplayFunc(display);
-
-    // Inicia el bucle principal de GLUT (permanece en ejecución hasta que se cierre la ventana)
-    glutMainLoop();
-
-    // Finaliza el programa correctamente
-    return EXIT_SUCCESS; // También se podría usar `return 0;`
+    return EXIT_SUCCESS; // puede colocarse tambien return 0
 }
