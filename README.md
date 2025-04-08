@@ -1,7 +1,7 @@
 # Computación Gráfica
 
-## Estudiante
-    Nombre: Diego Espinoza
+## Profesor
+    Nombre: Jhelly Perez
 
 Este repositorio contiene ejemplos y ejercicios realizados en el curso de **Computación Gráfica**.
 
