@@ -52,6 +52,10 @@ void display (void)
     glClearColor(0, 0.1, 0.1, 0);
     glClear(GL_COLOR_BUFFER_BIT);
     
+    /*Tamanio de Lineas o Puntos*/
+    glPointSize(3);
+    glLineWidth(3);
+
     cuadrado((float[2]){-8,6}, 2, amarillo, GL_POINTS);
     cuadrado((float[2]){-5,6}, 2, rojo,     GL_LINES);
     cuadrado((float[2]){-2,6}, 2, verde,    GL_LINE_STRIP);
@@ -63,9 +67,6 @@ void display (void)
     cuadrado((float[2]){1,3},  2, naranja,  GL_QUAD_STRIP);
     cuadrado((float[2]){4,3},  2, rosa,     GL_POLYGON);
 
-    /*Tamanio de Lineas o Puntos*/
-    glPointSize(5);
-    glLineWidth(5);
 
 
     glutSwapBuffers();
