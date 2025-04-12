@@ -1,0 +1,101 @@
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
+#include <iostream>
+#include <stdlib.h>
+
+float amarillo[3]     = {1, 1, 0},
+      rojo[3]         = {1, 0, 0}, 
+      verde[3]        = {0, 1, 0}, 
+      azul[3]         = {0, 0, 1},
+      cyan[3]         = {0, 1, 1},
+      magenta[3]      = {1, 0, 1},
+      blanco[3]       = {1, 1, 1},
+      gris[3]         = {0.5f, 0.5f, 0.5f},
+      naranja[3]      = {1, 0.647f, 0},
+      rosa[3]         = {1, 0.75f, 0.8f},
+      marron[3]       = {0.6f, 0.3f, 0},
+      verde_oscuro[3] = {0, 0.5f, 0},
+      azul_oscuro[3]  = {0, 0, 0.5f},
+      aqua[3]         = {0, 1, 0.5f}; 
+
+GLubyte mosca[] = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x03, 0x80, 0x01, 0xC0, 0x06, 0xC0, 0x03, 0x60,
+    0x04, 0x60, 0x06, 0x20, 0x04, 0x30, 0x0C, 0x20,
+    0x04, 0x18, 0x18, 0x20, 0x04, 0x0C, 0x30, 0x20,
+    0x04, 0x06, 0x60, 0x20, 0x44, 0x03, 0xC0, 0x22,
+    0x44, 0x01, 0x80, 0x22, 0x44, 0x01, 0x80, 0x22,
+    0x44, 0x01, 0x80, 0x22, 0x44, 0x01, 0x80, 0x22,
+    0x44, 0x01, 0x80, 0x22, 0x44, 0x01, 0x80, 0x22,
+    0x66, 0x01, 0x80, 0x66, 0x33, 0x01, 0x80, 0xCC,
+    0x19, 0x81, 0x81, 0x98, 0x0C, 0xC1, 0x83, 0x30,
+    0x07, 0xe1, 0x87, 0xe0, 0x03, 0x3f, 0xfc, 0xc0,
+    0x03, 0x31, 0x8c, 0xc0, 0x03, 0x33, 0xcc, 0xc0,
+    0x06, 0x64, 0x26, 0x60, 0x0c, 0xcc, 0x33, 0x30,
+    0x18, 0xcc, 0x33, 0x18, 0x10, 0xc4, 0x23, 0x08,
+    0x10, 0x63, 0xC6, 0x08, 0x10, 0x30, 0x0c, 0x08,
+    0x10, 0x18, 0x18, 0x08, 0x10, 0x00, 0x00, 0x08
+};
+
+GLubyte mosca_gris[32 * 32];
+
+void convertirBitmapAGris()
+{
+    for (int y = 0; y < 32; ++y)
+    {
+        for (int x = 0; x < 32; ++x)
+        {
+            int byteIndex = y * 4 + x / 8;
+            int bitIndex = 7 - (x % 8);
+            bool bit = (mosca[byteIndex] >> bitIndex) & 1;
+            mosca_gris[(31 - y) * 32 + x] = bit ? 0 : 255; // invertir verticalmente y colores
+        }
+    }
+}
+
+
+static void display(void)
+{
+    glClearColor(1, 1, 1, 1);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glRasterPos2i(-4, -4);  
+    glPixelZoom(1.0f, 1.0f);  
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    
+    glDrawPixels(32, 32, GL_LUMINANCE, GL_UNSIGNED_BYTE, mosca_gris);
+
+    glutSwapBuffers();
+}
+
+
+void inicio()
+{
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    int a = 6;
+    gluOrtho2D(-a, a, -a, a);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+
+
+int main(int argc, char *argv[])
+{
+    glutInit(&argc, argv);
+    glutInitWindowSize(600, 600);
+    glutInitWindowPosition(10, 10);
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+    
+    glutCreateWindow("PATRONES");
+    inicio();
+
+    convertirBitmapAGris(); // importante
+
+    glutDisplayFunc(display);
+    glutMainLoop();
+    return EXIT_SUCCESS;
+}
