@@ -21,6 +21,7 @@ float amarillo[3]     = {1, 1, 0},
       azul_oscuro[3]  = {0, 0, 0.5f},
       aqua[3]         = {0, 1, 0.5f}; 
 
+
 GLubyte mosca[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x03, 0x80, 0x01, 0xC0, 0x06, 0xC0, 0x03, 0x60,
@@ -38,35 +39,33 @@ GLubyte mosca[] = {
     0x18, 0xcc, 0x33, 0x18, 0x10, 0xc4, 0x23, 0x08,
     0x10, 0x63, 0xC6, 0x08, 0x10, 0x30, 0x0c, 0x08,
     0x10, 0x18, 0x18, 0x08, 0x10, 0x00, 0x00, 0x08
-};
+}; // 32x32 pixeles
 
-GLubyte mosca_gris[32 * 32];
+/*
+ * Dibuja varias instancias del bitmap "mosca" en la ventana de OpenGL.
+ *
+ * @param count: Cantidad de moscas a dibujar.
+ */
+void drawOnlyMosca(int count){
+    // Posicion Inicial
+    glRasterPos2f(0,0);
 
-void convertirBitmapAGris()
-{
-    for (int y = 0; y < 32; ++y)
+    for (int i = 0; i < count; i++)
     {
-        for (int x = 0; x < 32; ++x)
-        {
-            int byteIndex = y * 4 + x / 8;
-            int bitIndex = 7 - (x % 8);
-            bool bit = (mosca[byteIndex] >> bitIndex) & 1;
-            mosca_gris[(31 - y) * 32 + x] = bit ? 0 : 255; // invertir verticalmente y colores
-        }
+        // https://learn.microsoft.com/es-es/windows/win32/opengl/glbitmap
+        glBitmap(32, 32, 32, 32, 0, 0, mosca);
     }
+    
 }
 
 
 static void display(void)
 {
-    glClearColor(1, 1, 1, 1);
+    glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glRasterPos2i(-4, -4);  
-    glPixelZoom(1.0f, 1.0f);  
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    drawOnlyMosca(4);
     
-    glDrawPixels(32, 32, GL_LUMINANCE, GL_UNSIGNED_BYTE, mosca_gris);
 
     glutSwapBuffers();
 }
@@ -92,8 +91,6 @@ int main(int argc, char *argv[])
     
     glutCreateWindow("PATRONES");
     inicio();
-
-    convertirBitmapAGris(); // importante
 
     glutDisplayFunc(display);
     glutMainLoop();
