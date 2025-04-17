@@ -75,9 +75,10 @@ static void display(void)
 
 void inicio()
 {
+    int a = 6;
+    
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    int a = 6;
     gluOrtho2D(-a, a, -a, a);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -91,7 +92,7 @@ int main(int argc, char *argv[])
     glutInitWindowPosition(10, 10);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     
-    glutCreateWindow("PATRONES");
+    glutCreateWindow("Mosca");
     inicio();
 
     glutDisplayFunc(display);
