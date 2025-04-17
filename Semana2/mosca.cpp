@@ -44,29 +44,31 @@ GLubyte mosca[] = {
 /*
  * Dibuja varias instancias del bitmap "mosca" en la ventana de OpenGL.
  *
- * @param count: Cantidad de moscas a dibujar.
+ * @param count: Número total de moscas a dibujar.
+ * @param x0: Coordenada X inicial 
+ * @param y0: Coordenada Y inicial 
+ * @param xmove: Desplazamiento horizontal tras cada dibujo.
+ * @param ymove: Desplazamiento vertical tras cada dibujo.
  */
-void drawOnlyMosca(int count){
+void drawOnlyMosca(int count, int x0, int y0, int xmove, int ymove){
     // Posicion Inicial
-    glRasterPos2f(0,0);
+    glRasterPos2f(x0,y0);
 
     for (int i = 0; i < count; i++)
     {
         // https://learn.microsoft.com/es-es/windows/win32/opengl/glbitmap
-        glBitmap(32, 32, 32, 32, 0, 0, mosca);
+        glBitmap(32, 32, 0, 0, xmove, ymove, mosca);
     }
     
 }
-
 
 static void display(void)
 {
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    drawOnlyMosca(4);
+    drawOnlyMosca(1,0,0,32,0);
     
-
     glutSwapBuffers();
 }
 
