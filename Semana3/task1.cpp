@@ -47,7 +47,8 @@ float paso = 0.15;
 // Colores
 float   amarillo[3]     = {1, 1, 0},
         rojo[3]       = {1, 0, 0},
-        blanco[3]     = {1, 1, 1},
+        verde_oscuro[3] = {0, 0.5f, 0},
+        blanco[3] = {1, 1, 1},
         negro[3]      = {0, 0, 0};
 
 // Limites de Pantalla
@@ -226,7 +227,7 @@ void display(void) {
     // Texto
     if (gameWon) {
         std::string winMsg = "¡GAME OVER!";
-        drawText(-0.48, 0, blanco, GLUT_BITMAP_TIMES_ROMAN_24, winMsg);
+        drawText(-0.48, 0, verde_oscuro, GLUT_BITMAP_TIMES_ROMAN_24, winMsg);
     } else {
         // Int >> String
         std::ostringstream scoreStream;
