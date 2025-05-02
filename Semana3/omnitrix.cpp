@@ -32,8 +32,6 @@ void display() {
   glColor3f(0, 0, 0);
   drawSector(0, 0, 0.7, 0, 2 * PI);
 
-  // Detalles
-  // Enloquesiste y :v
   float y = 0.03;
   glColor3f(0, 0, 0);
   glBegin(GL_POLYGON);
@@ -49,7 +47,6 @@ void display() {
     glVertex2f(-y, 1);
   glEnd();
 
-  // Centro
   glColor3f(0, 1, 0);
   drawSector(0, -0.1, 0.7, PI / 3, 2 * PI / 3);
   glColor3f(0, 1, 0);

@@ -43,7 +43,7 @@ void polygon(float c[2], float r, float n,float *RGB, GLenum MODO){
 // Función de renderizado
 void display(void)
 {
-    glClearColor(0,0,0,0);// color de fondo de ventana
+    glClearColor(0,0.5,0.5,0);// color de fondo de ventana
     glClear(GL_COLOR_BUFFER_BIT);
     glPointSize(5);
 
