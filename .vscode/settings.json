@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "*.tex": "latex",
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "cstdlib": "cpp"
     }
 }
