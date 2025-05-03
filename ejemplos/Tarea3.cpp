@@ -19,6 +19,9 @@ float rojo[3]         = {1, 0, 0},
       blanco[3]       = {1, 1, 1},
       negro[3]        = {0,0,0};
 
+
+
+      
       void drawTangentsToCircle(
         float cx, float cy,
         float radius,
