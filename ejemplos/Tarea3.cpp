@@ -79,7 +79,7 @@ void drawSector(
         glColor3fv(RGB);
         int segments = 100;
         
-        glBegin(GL_LINE_LOOP);
+        glBegin(GL_LINE_STRIP);
         //glVertex2f(cx, cy);
         for (int i = 0; i < segments; ++i) {
             float theta = t1 + i * (t2 - t1) / segments;
@@ -141,24 +141,28 @@ void dibujarContornoElipse(
         glEnd();
         }
 
-void parabola(float xInit, float xEnd, float paso, float h, float k, float m, float *RGB){
-    glColor3fv(negro);
-    glBegin(GL_TRIANGLE_FAN);
+void parabola(float Init, float End, float paso, float h, float k, float m, float *RGB, int op){
+    switch (op)
+    {
+    case 1:
+        glBegin(GL_LINE_STRIP);
+        for (float x = Init; x <= End; x += paso) {
+            float y = k - m * std::pow((x - h), 2);
+            glVertex2f(x, y);
+        }
+        glEnd();
+        break;
+    case 2:
+        glBegin(GL_LINE_STRIP);
+        for (float y = Init; y <= End; y += paso) {
+            float x = k - m * std::pow((y - h), 2);
+            glVertex2f(x, y);
+        }
+        glEnd();
+        break;
+    }
     
-    for (float x = xInit; x <= xEnd; x += paso) {
-        float y = k- m * std::pow((x - h), 2);
-        glVertex2f(0,0);
-        glVertex2f(x, y);
-    }
-    glEnd();
-    glColor3fv(RGB);
 
-    glBegin(GL_LINE_STRIP);
-    for (float x = xInit; x <= xEnd; x += paso) {
-        float y = k- m * std::pow((x - h), 2);
-        glVertex2f(x, y);
-    }
-    glEnd();
 }
 
 void drawHeart(float cx, float cy, float scaleX, float scaleY, float rotationDegrees = 0.0f, float step = 0.01f) {
@@ -189,7 +193,7 @@ void drawHeart(float cx, float cy, float scaleX, float scaleY, float rotationDeg
 void display(void) {
 glClearColor(1, 1, 1, 1);  
 glClear(GL_COLOR_BUFFER_BIT);
-
+glLineWidth(2);
 
 
 
@@ -244,6 +248,21 @@ drawSector(-0.77,1.5,0,0,0.09,0,2*PI,negro,false);
 drawSector(0.68,1,0,0,0.09,0,2*PI,negro,false);
 drawSector(0.77,1.5,0,0,0.09,0,2*PI,negro,false);
 
+drawSector(2.5,0.6,0,0,0.1,0,2*PI,negro,false);
+drawSector(-2.5,0.6,0,0,0.1,0,2*PI,negro,false);
+
+drawSector(-1.5,2.5,0,0,0.1,0,2*PI,negro,false);
+drawSector(1.5,2.5,0,0,0.1,0,2*PI,negro,false);
+
+drawSector(-2.4,2.5,0,0,0.1,0,2*PI,negro,false);
+drawSector(2.4,2.5,0,0,0.1,0,2*PI,negro,false);
+
+drawSector(-2.9,1.9,0,0,0.1,0,2*PI,negro,false);
+drawSector(2.9,1.9,0,0,0.1,0,2*PI,negro,false);
+
+drawSector(-2.9,1,0,0,0.1,0,2*PI,negro,false);
+drawSector(2.9,1,0,0,0.1,0,2*PI,negro,false);
+
 // Circulos en Alas Pequeñas
 drawSector(1.38,-0.25,0,0,0.1,0,2*PI,negro,false);
 
@@ -279,32 +298,50 @@ drawSector(-0.5,-0.87,0,0,0.1,0,2*PI,negro,false);
 
 
 //
-drawSector(-2.75,2.25,0,0,0.15,0,2*PI,negro,false);
-parabola(-2.75,-2.2,0.01,-2.75,2.4,2,negro);
-parabola(-2.75,-2.2,0.01,-2.75,2.1,1,negro);
+drawSector(-2.9,1.5,0,0,0.15,0.5*PI,1.5*PI,negro,false);
+parabola(1.5,1.81,0.01,1.5,-3.05,-6,negro,2);
+parabola(-2.9,-2.49,0.01,-2.9,1.35,-2.75,negro,1);
 
-drawSector(-1.95,2.6,0,0,0.15,0,2*PI,negro,false);
-parabola(-2.4,-1.95,0.01,-1.95, 2.45, 5,negro);
-parabola(-2.3,-2.1,0.01,-1.95, 2.8, 8,negro);
+drawSector(-2.75,2.25,0,0,0.15,0.5*PI,1.5*PI,negro,false);
+parabola(-2.75,-2.2,0.01,-2.75,2.4,2,negro,1);
+parabola(-2.75,-2.2,0.01,-2.75,2.1,1,negro,1);
 
-drawSector(0.68,3,0,0,0.2,0,2*PI,negro,false);
-parabola(0,0.63,0.01,0.6,2.8,8,negro);
-parabola(0,0.63,0.01,0.6,3.2,9,negro);
-
-
-drawSector(0.68,3,0,0,0.1,0,2*PI,negro,false);
-parabola(0.35, 0.7, 0.01, 0.7, 2.9, 3, negro);
-parabola(0.35, 0.67, 0.01, 0.67, 3.1, 6, negro);
+drawSector(-1.95,2.6,0,0,0.15,-0.5*PI,PI,negro,false);
+parabola(-2.23,-1.95,0.01,-1.95, 2.45, 6,negro,1);
+parabola(-2.23,-2.1,0.01,-1.93, 2.9, 10,negro,1);
 
 
-drawSector(-0.68,3,0,0,0.2,0,2*PI,negro,false);
-parabola(-0.63,0,0.01,-0.6,2.8,8,negro);
-parabola(-0.63,0,0.01,-0.6,3.2,9,negro);
+drawSector(2.9,1.5,0,0,0.15,-0.5*PI,0.5*PI,negro,false);
+parabola(1.5,1.81,0.01,1.5,3.05,6,negro,2);
+parabola(2.49,2.9,0.01,2.9,1.35,-2.75,negro,1);
+
+drawSector(2.75,2.25,0,0,0.15,-0.5*PI,0.5*PI,negro,false);
+parabola(2.2,2.75,0.01,2.75,2.4,2,negro,1);
+parabola(2.2,2.75,0.01,2.75,2.1,1,negro,1);
+
+drawSector(1.95,2.6,0,0,0.15,0,1.5*PI,negro,false);
+parabola(1.95,2.23,0.01,1.95, 2.45, 6,negro,1);
+parabola(2.1,2.23,0.01,1.93, 2.9, 10,negro,1);
 
 
-drawSector(-0.68,3,0,0,0.1,0,2*PI,negro,false);
-parabola(-0.7,-0.35,  0.01, -0.7, 2.9, 3, negro);
-parabola(-0.67,-0.35,  0.01, -0.67, 3.1, 6, negro);
+
+
+
+drawSector(0.68,3,0,0,0.2,-0.65*PI,0.65*PI,negro,false);
+parabola(0,0.63,0.01,0.6,2.8,8,negro,1);
+parabola(0,0.63,0.01,0.6,3.2,9,negro,1);
+
+drawSector(0.68,3,0,0,0.1,-0.5*PI,0.5*PI,negro,false);
+parabola(0.35, 0.7, 0.01, 0.7, 2.9, 3, negro,1);
+parabola(0.35, 0.67, 0.01, 0.67, 3.1, 6, negro,1);
+
+drawSector(-0.68,3,0,0,0.2,0.35*PI,1.65*PI,negro,false);
+parabola(-0.63,0,0.01,-0.6,2.8,8,negro,1);
+parabola(-0.63,0,0.01,-0.6,3.2,9,negro,1);
+
+drawSector(-0.68,3,0,0,0.1,0.5*PI,1.5*PI,negro,false);
+parabola(-0.7,-0.35,  0.01, -0.7, 2.9, 3, negro,1);
+parabola(-0.67,-0.35,  0.01, -0.67, 3.1, 6, negro,1);
 
 
 //
