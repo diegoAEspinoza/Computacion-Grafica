@@ -21,11 +21,14 @@ float blanco[3]       = {1, 1, 1},
 
 
       
-      void drawTangentsToCircle(
+void drawTangentsToCircle(
         float cx, float cy,
         float radius,
         float x2, float y2
     ) {
+
+
+
         float dx = x2 - cx;
         float dy = y2 - cy;
         float distSq = dx * dx + dy * dy;
@@ -65,36 +68,13 @@ float blanco[3]       = {1, 1, 1},
             glVertex2f(tx2, ty2);
         glEnd();
     }
-void drawCircle(float cx, float cy, float radius, float *RGB) {
-    int segments = 100; 
 
-    glColor3fv(blanco);
-    glBegin(GL_TRIANGLE_FAN);
-    for (int i = 0; i < segments; ++i) {
-        float theta = (i * (2*PI) / segments) ;
-        float x1 = cx + radius * cosf(theta);
-        float y1 = cy + radius * sinf(theta);
-        glVertex2f(x1, y1);
-    }
-    glEnd();
-
-
-    glColor3fv(RGB);
-    glBegin(GL_LINE_LOOP);
-    for (int i = 0; i < segments; ++i) {
-        float theta = (i * (2*PI) / segments) ;
-        float x1 = cx + radius * cosf(theta);
-        float y1 = cy + radius * sinf(theta);
-        glVertex2f(x1, y1);
-    }
-    glEnd();
-    }
 void drawSector(
         float cx, float cy,
         float tx, float ty,
         float radius,
         float t1, float t2,
-        float *RGB) {
+        float *RGB, bool op) {
         
         glColor3fv(RGB);
         int segments = 100;
@@ -112,7 +92,10 @@ void drawSector(
             glVertex2f(x2, y2);
         }
         glEnd();
-        drawTangentsToCircle(cx, cy, radius, tx, ty);
+        if (op)
+        {
+            drawTangentsToCircle(cx, cy, radius, tx, ty);
+        }
     }
 
 void dibujarContornoElipse(
@@ -159,7 +142,17 @@ void dibujarContornoElipse(
         }
 
 void parabola(float xInit, float xEnd, float paso, float h, float k, float m, float *RGB){
+    glColor3fv(negro);
+    glBegin(GL_TRIANGLE_FAN);
+    
+    for (float x = xInit; x <= xEnd; x += paso) {
+        float y = k- m * std::pow((x - h), 2);
+        glVertex2f(0,0);
+        glVertex2f(x, y);
+    }
+    glEnd();
     glColor3fv(RGB);
+
     glBegin(GL_LINE_STRIP);
     for (float x = xInit; x <= xEnd; x += paso) {
         float y = k- m * std::pow((x - h), 2);
@@ -200,188 +193,129 @@ glClear(GL_COLOR_BUFFER_BIT);
 
 
 
-    //Alas Derecha
-    // --Pequeña
-    drawSector(
-    1.25, -1,
-    0.2,0,
-    1.1,
-    0, 2*PI,
-    negro);
+//Alas Derecha
+// --Pequeña
+drawSector(1.25, -1,0.2,0,1.1,0, 2*PI,negro, true);
+// --Grande
+drawSector(2,1.5,0.2,0,1.5,0, 2*PI,negro, true);
+// Detalles
+drawLine(1.75,0,blanco);
+drawSector(1.25, -1,0.35,0.1,1,0, 2*PI,negro, true);
+drawSector(1.25, -1,0.43,0,.5,0, 2*PI,negro, true);
+drawSector(1.25, -1,0.56,-0.15,.25,0, 2*PI,negro, true);
 
+drawSector(2,1.5,0.35,0.15,1.35,0, 2*PI,negro, true);
 
-    // --Grande
-    drawSector(
-    2,1.5,
-    0.2,0,
-    1.5,
-    0, 2*PI,
-    negro);
+//Alas Izquierda
+// --Pequeña
+drawSector(-1.25,-1,-0.2,0,1.1,0, 2*PI,negro, true);
 
-        
-    drawLine(1.75,0,blanco);
-    drawSector(
-        1.25, -1,
-        0.35,0.1,
-        1,
-        0, 2*PI,
-        negro);
-        drawSector(
-            1.25, -1,
-            0.43,0,
-            .5,
-            0, 2*PI,
-            negro);
-        drawSector(
-            1.25, -1,
-            0.56,-0.15,
-            .25,
-            0, 2*PI,
-            negro);
+// --Grande
+drawSector(-2,1.5,-0.2,0,1.5,0, 2*PI,negro, true);
+// Detalles
+drawLine(-1.75,0,blanco);
+drawSector(-1.25, -1, -0.35,0.1,1,0, 2*PI,negro, true);
+drawSector(-1.25, -1,-0.4,0,.5,0, 2*PI,negro, true);
+drawSector(-1.25, -1,-0.5,-0.15,.25,0, 2*PI,negro, true);
+drawSector(-2,1.5,-0.35,0.15,1.35,0, 2*PI,negro, true);
 
-    drawSector(
-        2,1.5,
-        0.35,0.15,
-        1.35,
-        0, 2*PI,
-        negro);
-    //Alas Izquierda
-    // --Pequeña
+// Circulos en Alas Grandes
+drawSector(1.,0.35,0,0,0.15,0,2*PI,negro,false);
+drawSector(1.,0.35,0,0,0.1,0,2*PI,negro,false);
 
-    drawSector(
-    -1.25,-1,
-    -0.2,0,
-    1.1,
-    0, 2*PI,
-    negro);
+drawSector(1.5,0.35,0,0,0.15,0,2*PI,negro,false);
+drawSector(1.5,0.35,0,0,0.1,0,2*PI,negro,false);
 
-    // --Grande
-    drawSector(
-    -2,1.5,
-    -0.2,0,
-    1.5,
-    0, 2*PI,
-    negro);
+drawSector(2,0.35,0,0,0.15,0,2*PI,negro,false);
+drawSector(2,0.35,0,0,0.1,0,2*PI,negro,false);
 
-    drawLine(-1.75,0,blanco);
+drawSector(-1,0.35,0,0,0.15,0,2*PI,negro,false);
+drawSector(-1,0.35,0,0,0.1,0,2*PI,negro,false);
 
-    drawSector(
-        -1.25, -1,
-        -0.35,0.1,
-        1,
-        0, 2*PI,
-        negro);
-        
-        drawSector(
-            -1.25, -1,
-            -0.4,0,
-            .5,
-            0, 2*PI,
-            negro);
-        drawSector(
-            -1.25, -1,
-            -0.5,-0.15,
-            .25,
-            0, 2*PI,
-            negro);
-    
-    drawSector(
-            -2,1.5,
-            -0.35,0.15,
-            1.35,
-            0, 2*PI,
-            negro);
-//
-drawCircle(1.,0.35,0.15,negro);
-drawCircle(1.,0.35,0.1,negro);
+drawSector(-1.5,0.35,0,0,0.15,0,2*PI,negro,false);
+drawSector(-1.5,0.35,0,0,0.1,0,2*PI,negro,false);
 
-drawCircle(1.5,0.35,0.15,negro);
-drawCircle(1.5,0.35,0.1,negro);
+drawSector(-2,0.35,0,0,0.15,0,2*PI,negro,false);
+drawSector(-2,0.35,0,0,0.1,0,2*PI,negro,false);
 
-drawCircle(2.,0.35,0.15,negro);
-drawCircle(2.,0.35,0.1,negro);
+drawSector(-0.68,1,0,0,0.09,0,2*PI,negro,false);
+drawSector(-0.77,1.5,0,0,0.09,0,2*PI,negro,false);
 
-drawCircle(-1,0.35,0.15,negro);
-drawCircle(-1,0.35,0.1,negro);
+drawSector(0.68,1,0,0,0.09,0,2*PI,negro,false);
+drawSector(0.77,1.5,0,0,0.09,0,2*PI,negro,false);
 
-drawCircle(-1.5,0.35,0.15,negro);
-drawCircle(-1.5,0.35,0.1,negro);
+// Circulos en Alas Pequeñas
+drawSector(1.38,-0.25,0,0,0.1,0,2*PI,negro,false);
 
-drawCircle(-2,0.35,0.15,negro);
-drawCircle(-2,0.35,0.1,negro);
+drawSector(1.79,-0.48,0,0,0.15,0,2*PI,negro,false);
 
-drawCircle(-0.68,1,0.09,negro);
-drawCircle(-0.77,1.5,0.09,negro);
-//
+drawSector(1.99,-1.05,0,0,0.15,0,2*PI,negro,false);
+drawSector(1.99,-1.05,0,0,0.1,0,2*PI,negro,false);
 
-drawCircle(1.38,-0.25,0.1,negro);
+drawSector(1.66,-1.6,0,0,0.15,0,2*PI,negro,false);
+drawSector(1.66,-1.6,0,0,0.1,0,2*PI,negro,false);
 
-drawCircle(1.79,-0.48,0.15,negro);
+drawSector(1,-1.7,0,0,0.15,0,2*PI,negro,false);
+drawSector(1,-1.7,0,0,0.1,0,2*PI,negro,false);
 
-drawCircle(1.99,-1.05,0.15,negro);
-drawCircle(1.99,-1.05,0.1,negro);
+drawSector(0.6,-1.4,0,0,0.15,0,2*PI,negro,false);
+drawSector(0.5,-0.87,0,0,0.1,0,2*PI,negro,false);
 
-drawCircle(1.66,-1.6,0.15,negro);
-drawCircle(1.66,-1.6,0.1,negro);
+drawSector(-1.38,-0.25,0,0,0.1,0,2*PI,negro,false);
 
-drawCircle(1.,-1.7,0.15,negro);
-drawCircle(1.,-1.7,0.1,negro);
+drawSector(-1.79,-0.48,0,0,0.15,0,2*PI,negro,false);
 
-drawCircle(0.6,-1.4,0.15,negro);
+drawSector(-1.99,-1.05,0,0,0.15,0,2*PI,negro,false);
+drawSector(-1.99,-1.05,0,0,0.1,0,2*PI,negro,false);
 
-drawCircle(0.5,-0.87,0.1,negro);
+drawSector(-1.66,-1.6,0,0,0.15,0,2*PI,negro,false);
+drawSector(-1.66,-1.6,0,0,0.1,0,2*PI,negro,false);
 
-drawCircle(0.68,1,0.09,negro);
-drawCircle(0.77,1.5,0.09,negro);
+drawSector(-1,-1.7,0,0,0.15,0,2*PI,negro,false);
+drawSector(-1,-1.7,0,0,0.1,0,2*PI,negro,false);
 
-// --
-drawCircle(-1.38,-0.25,0.1,negro);
+drawSector(-0.6,-1.4,0,0,0.15,0,2*PI,negro,false);
+drawSector(-0.5,-0.87,0,0,0.1,0,2*PI,negro,false);
 
-drawCircle(-1.79,-0.48,0.15,negro);
-
-drawCircle(-1.99,-1.05,0.15,negro);
-drawCircle(-1.99,-1.05,0.1,negro);
-
-drawCircle(-1.66,-1.6,0.15,negro);
-drawCircle(-1.66,-1.6,0.1,negro);
-
-drawCircle(-1.,-1.7,0.15,negro);
-drawCircle(-1.,-1.7,0.1,negro);
-
-drawCircle(-0.6,-1.4,0.15,negro);
-
-drawCircle(-0.5,-0.87,0.1,negro);
-//
-    drawCircle(0.68,3,0.2,negro);
-    drawCircle(0.49,2.95,0.18,blanco);
-    parabola(0,0.63,0.01,0.6,2.8,8,negro);
-    parabola(0,0.63,0.01,0.6,3.2,9,negro);
-    
-    drawCircle(0.68,3,0.1,negro);
-    drawCircle(0.67,2.99,0.09,blanco);
-    parabola(0.35, 0.7, 0.01, 0.7, 2.9, 3, negro);
-    parabola(0.35, 0.67, 0.01, 0.67, 3.1, 6, negro);
-//
-
-    drawCircle(-0.68,3,0.2,negro);
-    drawCircle(-0.49,2.95,0.18,blanco);
-    parabola(-0.63,0,0.01,-0.6,2.8,8,negro);
-    parabola(-0.63,0,0.01,-0.6,3.2,9,negro);
-
-    drawCircle(-0.68,3,0.1,negro);
-    drawCircle(-0.67,2.99,0.09,blanco);
-    parabola(-0.7,-0.35,  0.01, -0.7, 2.9, 3, negro);
-    parabola(-0.67,-0.35,  0.01, -0.67, 3.1, 6, negro);
 
 //
-    drawHeart(-1.6, 1.35, 1.1f, 1.5, 50.0f);
-    drawHeart(-1.45, 1.2, 0.65f, 0.9, 50.0f);
+drawSector(-2.75,2.25,0,0,0.15,0,2*PI,negro,false);
+parabola(-2.75,-2.2,0.01,-2.75,2.4,2,negro);
+parabola(-2.75,-2.2,0.01,-2.75,2.1,1,negro);
 
-    drawHeart(1.6, 1.35, 1.1f, 1.5, -48.0f);
-    drawHeart(1.45, 1.2, 0.65f, 0.9, -48.0f);
+drawSector(-1.95,2.6,0,0,0.15,0,2*PI,negro,false);
+parabola(-2.4,-1.95,0.01,-1.95, 2.45, 5,negro);
+parabola(-2.3,-2.1,0.01,-1.95, 2.8, 8,negro);
 
-    // Cuerpo
-    dibujarContornoElipse(0, -0.5, 0.2, 1.5, negro);
+drawSector(0.68,3,0,0,0.2,0,2*PI,negro,false);
+parabola(0,0.63,0.01,0.6,2.8,8,negro);
+parabola(0,0.63,0.01,0.6,3.2,9,negro);
+
+
+drawSector(0.68,3,0,0,0.1,0,2*PI,negro,false);
+parabola(0.35, 0.7, 0.01, 0.7, 2.9, 3, negro);
+parabola(0.35, 0.67, 0.01, 0.67, 3.1, 6, negro);
+
+
+drawSector(-0.68,3,0,0,0.2,0,2*PI,negro,false);
+parabola(-0.63,0,0.01,-0.6,2.8,8,negro);
+parabola(-0.63,0,0.01,-0.6,3.2,9,negro);
+
+
+drawSector(-0.68,3,0,0,0.1,0,2*PI,negro,false);
+parabola(-0.7,-0.35,  0.01, -0.7, 2.9, 3, negro);
+parabola(-0.67,-0.35,  0.01, -0.67, 3.1, 6, negro);
+
+
+//
+drawHeart(-1.6, 1.35, 1.1f, 1.5, 50.0f);
+drawHeart(-1.45, 1.2, 0.65f, 0.9, 50.0f);
+
+drawHeart(1.6, 1.35, 1.1f, 1.5, -48.0f);
+drawHeart(1.45, 1.2, 0.65f, 0.9, -48.0f);
+
+// Cuerpo
+dibujarContornoElipse(0, -0.5, 0.2, 1.5, negro);
 
 glutSwapBuffers();  
 }
