@@ -31,7 +31,7 @@ void elipse(float x, float y, float r1, float r2,float a, float b, float *RGB)
     glEnd();
 }
 
-// Parte 4: Corresponde al rango [4*PI/3, 3*PI/2)
+// Parte 4: Rango [4*PI/3, 3*PI/2)
 void draw_logo_part_4(float i_angle, float A, float B) {
     float s = (69.0 * M_PI_4 / 4.0) - i_angle * (15.0 / 8.0); 
     float P_curve_x = (A / 2.0) * sin(2 * s) * cos(s);
@@ -49,7 +49,7 @@ void draw_logo_part_4(float i_angle, float A, float B) {
     glEnd();
 }
 
-// Parte 5: Corresponde al rango [3*PI/2, 5*PI/3)
+// Parte 5: Rango [3*PI/2, 5*PI/3)
 void draw_logo_part_5(float i_angle, float A, float B) {
     float s = (53.0 * M_PI_4 / 4.0) - i_angle * (15.0 / 8.0); 
     float P_curve_x = (A / 2.0) * sin(2 * s) * cos(s);
@@ -66,7 +66,7 @@ void draw_logo_part_5(float i_angle, float A, float B) {
     glEnd();
 }
 
-// Parte 6: Corresponde al rango (5*PI/4, 4*PI/3)
+// Parte 6: Rango (5*PI/4, 4*PI/3)
 void draw_logo_part_6(float i_angle, float A, float B) {
     float s = 37.0 * i_angle / 12.0 - 331.0 * M_PI / 144.0;
     float P_curve_x = -0.3 * sin(2*s) * cos(s) - 0.505;
@@ -85,7 +85,7 @@ void draw_logo_part_6(float i_angle, float A, float B) {
     glEnd();
 }
 
-// Parte 7: Corresponde al rango [5*PI/3, 7*PI/4]
+// Parte 7: Rango [5*PI/3, 7*PI/4]
 void draw_logo_part_7(float i_angle, float A, float B) {
     float s = 37.0 * i_angle / 12.0 - 713.0 * M_PI / 144.0;
     float P_curve_x = -0.3 * sin(2*s) * cos(s) + 0.505;
@@ -104,7 +104,7 @@ void draw_logo_part_7(float i_angle, float A, float B) {
     glEnd();
 }
 
-// Parte 8: Corresponde al rango [PI/3, 4*PI/9)
+// Parte 8: Rango [PI/3, 4*PI/9)
 void draw_logo_part_8(float i_angle, float A, float B) {
     float s = 4.0 * M_PI - (27.0 * i_angle / 4.0);
     float cos_s = cos(s);
@@ -124,7 +124,7 @@ void draw_logo_part_8(float i_angle, float A, float B) {
     glEnd();
 }
 
-// Parte 9: Corresponde al rango [5*PI/9, 2*PI/3)
+// Parte 9: Rango [5*PI/9, 2*PI/3)
 void draw_logo_part_9(float i_angle, float A, float B) {
     float s = 11.0 * M_PI_4 - (27.0 * i_angle / 4.0);
     float cos_s = cos(s);
@@ -144,7 +144,7 @@ void draw_logo_part_9(float i_angle, float A, float B) {
     glEnd();
 }
 
-// Parte 10: Corresponde al rango [4*PI/9, 13*PI/27)
+// Parte 10: Rango [4*PI/9, 13*PI/27)
 void draw_logo_part_10(float i_angle, float A, float B) {
     float P_curve_x = B * cos(i_angle);
     float P_curve_y = 2.3 * (B * cos(i_angle) - A * cos(4.0*M_PI/9.0)) + 0.527;
@@ -159,7 +159,7 @@ void draw_logo_part_10(float i_angle, float A, float B) {
     glEnd();
 }
 
-// Parte 11: Corresponde al rango [14*PI/27, 5*PI/9)
+// Parte 11: Rango [14*PI/27, 5*PI/9)
 void draw_logo_part_11(float i_angle, float A, float B) {
     float P_curve_x = B * cos(i_angle);
     float P_curve_y = -2.3 * (B * cos(i_angle) + A * cos(4.0*M_PI/9.0)) + 0.527;
@@ -174,7 +174,7 @@ void draw_logo_part_11(float i_angle, float A, float B) {
     glEnd();
 }
 
-// Parte 12: Corresponde al rango [13*PI/27, 14*PI/27)
+// Parte 12: Rango [13*PI/27, 14*PI/27)
 void draw_logo_part_12(float i_angle, float A, float B) {
     float P_curve_x = B * cos(i_angle);
     float P_curve_y_const = 2.3 * (B * cos(13.0*M_PI/27.0) - A * cos(4.0*M_PI/9.0)) + 0.527; 
@@ -189,7 +189,7 @@ void draw_logo_part_12(float i_angle, float A, float B) {
 }
 
 
-// --- Función LogoBatman Refactorizada ---
+// --- Función LogoBatman ---
 void LogoBatman()
 {
     float A = 0.7;
@@ -240,13 +240,13 @@ void LogoBatman()
     }
 }
 
-// --- Función display y main (sin cambios significativos) ---
+
 void display(void)
 {
-    glClearColor(1,1,1,0); // Fondo blanco
+    glClearColor(1,1,1,0); 
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-    elipse(0,0,0.76,0.46,0,2*M_PI, negro);
+    elipse(0,0,0.77,0.47,0,2*M_PI, negro);
     elipse(0,0,0.75,0.45,0,2*M_PI, amarillo);
     elipse(0,0,0.7,0.4,0,2*M_PI,negro);
     LogoBatman();
