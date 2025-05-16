@@ -372,7 +372,7 @@ int main(int argc, char *argv[])
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 
 
-    glutCreateWindow("ComputaciOn Grafica 1.2");
+    glutCreateWindow("Mandala de Mariposa");
     inicio();
     glutDisplayFunc(display);
     glutMainLoop();

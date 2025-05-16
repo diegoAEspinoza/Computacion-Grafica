@@ -30,6 +30,9 @@ float amarillo[3]     = {1, 1, 0},
     morado[3] = {0.5f, 0.0f, 0.5f};
 
 
+
+
+
 void cardioide(float x, float y, float a, float b, float angulo, float n, float m, GLenum Modo, float *RGB){
     glColor3fv(RGB);
     glBegin(Modo);
