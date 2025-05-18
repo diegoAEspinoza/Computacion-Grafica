@@ -1,3 +1,19 @@
+/*
+    Nombre: Diego Alexhander ESpinoza Huaman
+
+    Se Logro:
+        - Crear un plano, en el cual la serpiente no salga. 
+        - Aunmentar una bolita cuando la serpiente se come una manzana.
+        - Aparece una manzana en una posicion aleatoria cuando la manzana que esta al inicio es consumida. 
+        - Mensaje de "HAS GANADO" cuando se coma 20 manzanas
+
+    Falta Implementar:
+        - Colisiones con su propio cuerpo y la pared.
+    Sugerencias:
+        - Cuando cresca la bolita nueva este fuera de la cabeza ya hacerlo mas visible
+*/
+
+
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -17,7 +33,6 @@
 #include <sstream>   
 #include <ctime>
 #include <iostream>
-
 
 
 #define PI 3.141592f
@@ -63,13 +78,8 @@ const float maxB = 4.35f;
 // Estado del Juego
 int score = 0;
 bool gameOver = false;
-bool playerWon = false; // NUEVO: Para rastrear si el jugador ganó
-const int WINNING_SCORE = 20; // NUEVO: Puntuación para ganar
-
-
-
-
-
+bool playerWon = false; 
+const int WINNING_SCORE = 20; 
 
 
 void spawnNewFood(size_t foodIndex) {
@@ -347,12 +357,7 @@ void display(void) {
         for (const auto& segment : snake) {
             drawSector(segment.x, segment.y, snakeSegmentRadio, verde_oscuro);
         }
-        
-
     }
-
-
-
 
     // Texto del Juego
     if (gameOver) {
@@ -381,8 +386,6 @@ void display(void) {
         std::string scoreText = scoreStream.str();
         drawText(-4.8f, 4.5f, blanco, GLUT_BITMAP_HELVETICA_18, scoreText);
     }
-
-
 
     glutSwapBuffers();  
 }
