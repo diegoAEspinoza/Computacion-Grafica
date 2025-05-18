@@ -64,7 +64,7 @@ const float maxB = 4.35f;
 int score = 0;
 bool gameOver = false;
 bool playerWon = false; // NUEVO: Para rastrear si el jugador ganó
-const int WINNING_SCORE = 2; // NUEVO: Puntuación para ganar
+const int WINNING_SCORE = 20; // NUEVO: Puntuación para ganar
 
 
 
@@ -133,7 +133,7 @@ void resetGame() {
 
 
 
-// Dibujos
+// Dibuja un sector circular (usado para serpiente y comida)
 void drawSector(float cx, float cy, float radius,float *RGB,int segments=100) {
     glColor3fv(RGB);
     glBegin(GL_POLYGON);
@@ -146,6 +146,8 @@ void drawSector(float cx, float cy, float radius,float *RGB,int segments=100) {
     glEnd();
     }
 
+
+// Dibuja un texto en pantalla en una posicion especifica
 
 void drawText(float x, float y, float *RGB, void* font, const std::string &text) {
     glColor3fv(RGB);
@@ -171,19 +173,12 @@ void collision() {
             float sumaRadiosCuadrada = sumaRadios * sumaRadios;
 
             if (distanciaCuadrada <= sumaRadiosCuadrada) {
-                // Obtener el último segmento
                 SnakeSegment last = snake.back();
-
-                // Usar su dirección
                 float dx = last.dx;
                 float dy = last.dy;
 
-                // Si por alguna razón dx/dy es 0,0 (ej. al inicio), asumimos hacia abajo
-                if (dx == 0 && dy == 0) {
-                    dx = 0;
-                    dy = -1;}
+                if (dx == 0 && dy == 0) {dx = 0;dy = -1;}
 
-                // Crear nuevo segmento detrás del último
                 SnakeSegment newSegment;
                 float segmentDiameter = 2 * snakeSegmentRadio;
                 newSegment.x = last.x + dx * segmentDiameter;
@@ -212,14 +207,13 @@ void collision() {
 
 }
 
-// Mueve la serpiente
+// Movimiento de la serpiente
 void moveSnake(float dx_step, float dy_step) {
     if (gameOver || snake.empty()) return;
 
     float potentialX = snake[0].x + dx_step;
     float potentialY = snake[0].y + dy_step;
 
-    // Límites reales para el centro de la cabeza
     float limitLeft   = minB + snakeSegmentRadio;
     float limitRight  = maxB - snakeSegmentRadio;
     float limitBottom = minB + snakeSegmentRadio;
@@ -229,22 +223,22 @@ void moveSnake(float dx_step, float dy_step) {
     float newHeadY = snake[0].y;
 
 
-    // Validar y limitar (Eje X)
+    
     if (dx_step != 0) { 
         if (potentialX < limitLeft)   newHeadX = limitLeft;
         else if (potentialX > limitRight)  newHeadX = limitRight;
         else newHeadX = potentialX;
     } else {
-        newHeadX = snake[0].x; // Mantener X si no hay movimiento horizontal
+        newHeadX = snake[0].x; 
     }
 
-    // Validar y limitar (Eje Y)
+    
     if (dy_step != 0) { 
          if (potentialY < limitBottom) newHeadY = limitBottom;
          else if (potentialY > limitTop)    newHeadY = limitTop;
          else newHeadY = potentialY;
     } else {
-        newHeadY = snake[0].y; // Mantener Y si no hay movimiento vertical
+        newHeadY = snake[0].y; 
     }
 
 
@@ -266,6 +260,7 @@ void moveSnake(float dx_step, float dy_step) {
     glutPostRedisplay();
 }
 
+// Definicion de teclas especiales
 void ProcessSpecialKeys( int key, int x, int y ) {
     switch (key) {
         case GLUT_KEY_UP:    moveSnake(0, paso); break;
@@ -298,7 +293,8 @@ void display(void) {
     glClearColor(0, 0, 0, 0);  
     glClear(GL_COLOR_BUFFER_BIT);
 
-        glColor3f(1,1,1);
+    // Cuadro
+    glColor3f(1,1,1);
     glBegin(GL_LINE_LOOP);
         glVertex2f(maxB,maxB);
         glVertex2f(-maxB,maxB);
