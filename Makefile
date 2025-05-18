@@ -4,7 +4,7 @@ CXXFLAGS = -Wall -g $(shell pkg-config --cflags glfw3 glew)
 LDFLAGS  = $(shell pkg-config --libs glfw3 glew glut) -lGL
 
 # Directorios donde se encuentran los archivos .cpp
-SOURCES_DIRS = Semana4
+SOURCES_DIRS = Semana5
 
 # Buscar todos los archivos .cpp en los directorios
 CPP_FILES = $(foreach dir, $(SOURCES_DIRS), $(wildcard $(dir)/*.cpp))

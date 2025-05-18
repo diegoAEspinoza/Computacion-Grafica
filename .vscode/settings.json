@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.tex": "latex",
+        "sstream": "cpp",
+        "iosfwd": "cpp"
+    }
+}
