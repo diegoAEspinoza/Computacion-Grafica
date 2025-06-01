@@ -27,7 +27,7 @@ int windowWidth = 800;
 int windowHeight = 600;
 
 // Propiedades de la Camara
-float camHorAngle = -0.5f; 
+float camAngle = -0.5f; 
 float camDirectionX = 0.0f;
 float camDirectionZ = -1.0f;     
 const float cameraRotationSpeed = 0.05f;
@@ -116,8 +116,8 @@ void setupCameraView() {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    camDirectionX = sin(camHorAngle * M_PI);
-    camDirectionZ = cos(camHorAngle * M_PI);
+    camDirectionX = sin(camAngle * M_PI);
+    camDirectionZ = cos(camAngle * M_PI);
 
     float camX = playerX - camDirectionX * cameraToPlayer;
     float camZ = playerZ - camDirectionZ * cameraToPlayer;
@@ -147,10 +147,10 @@ void Keyboard(unsigned char key, int x, int y) {
             break;
 
         case 'Q': 
-            camHorAngle -= cameraRotationSpeed;
+            camAngle -= cameraRotationSpeed;
             break;
         case 'E': 
-            camHorAngle += cameraRotationSpeed;
+            camAngle += cameraRotationSpeed;
             break;
         case 27: 
             exit(0);

@@ -2,6 +2,9 @@
     "files.associations": {
         "*.tex": "latex",
         "sstream": "cpp",
-        "iosfwd": "cpp"
+        "iosfwd": "cpp",
+        "cstdlib": "cpp",
+        "cctype": "cpp",
+        "cmath": "cpp"
     }
 }

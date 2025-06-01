@@ -25,12 +25,15 @@ Mejoras:
 
 #define PI 3.141592653589793f
 
-
+// Propiedades de la Camara
 float camAngle = 0.5f, camRadius = 10.0f;  
 float camY = 5.0f;
 float camZoom = 0.05f;
-float lookAtX = 0.0f, lookAtZ = 0.0f; 
+float lookAtX = 0.0f, lookAtZ = 0.0f;
 
+// Propiedades de la Escena
+const float FLOOR_BOUNDARY = 5.0f;
+const int FLOOR_DIVISIONS = 15.0f;
 
 void keyboard(unsigned char key, int x, int y) {
     switch (tolower(key)) {
@@ -54,38 +57,36 @@ void keyboard(unsigned char key, int x, int y) {
 }
 
 void scene() {
-    int filas = 10;
-    int columnas = 10;
-    float tamaño = 1.0f; 
+    float cellSize = (2.0f * FLOOR_BOUNDARY) / FLOOR_DIVISIONS;
 
-    for (int i = 0; i < filas; ++i) {
-        for (int j = 0; j < columnas; ++j) {
+    for (int i = 0; i < FLOOR_DIVISIONS; ++i) {
+        for (int j = 0; j < FLOOR_DIVISIONS; ++j) {
             if ((i + j) % 2 == 0)
-                glColor3f(0.9f, 0.9f, 0.9f); 
+                glColor3f(0.9f, 0.9f, 0.9f);  // Blanco
             else
-                glColor3f(0.2f, 0.2f, 0.2f); 
+                glColor3f(0.2f, 0.2f, 0.2f);  // Gris oscuro
 
-            float x = -5.0f + j * tamaño;
-            float z = -5.0f + i * tamaño;
+            float x = -FLOOR_BOUNDARY + j * cellSize;
+            float z = -FLOOR_BOUNDARY + i * cellSize;
 
             glBegin(GL_QUADS);
                 glVertex3f(x, 0, z);
-                glVertex3f(x + tamaño, 0, z);
-                glVertex3f(x + tamaño, 0, z + tamaño);
-                glVertex3f(x, 0, z + tamaño);
+                glVertex3f(x + cellSize, 0, z);
+                glVertex3f(x + cellSize, 0, z + cellSize);
+                glVertex3f(x, 0, z + cellSize);
             glEnd();
         }
     }
     
     glColor3f(0.4, 0.4, 0.4);
     glBegin(GL_QUADS);
-        glVertex3f(-5, 0, -5); glVertex3f(5, 0, -5);
-        glVertex3f(5, 4, -5);  glVertex3f(-5, 4, -5);
+        glVertex3f(-FLOOR_BOUNDARY, 0, -FLOOR_BOUNDARY); glVertex3f(FLOOR_BOUNDARY, 0, -FLOOR_BOUNDARY);
+        glVertex3f(FLOOR_BOUNDARY, 4, -FLOOR_BOUNDARY);  glVertex3f(-FLOOR_BOUNDARY, 4, -FLOOR_BOUNDARY);
 
     glEnd();
     glBegin(GL_QUADS);
-        glVertex3f(-5, 0, -5); glVertex3f(-5, 0, 5);
-        glVertex3f(-5, 4, 5); glVertex3f(-5, 4, -5);
+        glVertex3f(-FLOOR_BOUNDARY, 0, -FLOOR_BOUNDARY); glVertex3f(-FLOOR_BOUNDARY, 0, FLOOR_BOUNDARY);
+        glVertex3f(-FLOOR_BOUNDARY, 4, FLOOR_BOUNDARY); glVertex3f(-FLOOR_BOUNDARY, 4, -FLOOR_BOUNDARY);
     glEnd();
 }
 
