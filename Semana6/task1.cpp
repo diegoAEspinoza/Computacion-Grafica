@@ -1,12 +1,28 @@
 /*
 Nombre: Diego Alexhander Espinoza Huaman
 
-Mejoras:
-    1.
-    2.
-    3.
-    4.
+Descripcion: 
+    Se presenta un pequeño escenario con una mesa en el centro y 6 armarios
+    construidos en las paredes. 
 
+Controles:
+    Q: Para bajar la altura de la camara
+    E: Para aumentar la altura de la camara
+    D: Para girar en sentido antihorario de la camara
+    A: Para girar en sentido horario de la camara
+    W: Para disminuir la distancia de la camara al Eje Y
+    S: Para aumentar la distancia de la camara al Eje Y
+    Esc: Para salir de la simulacion
+
+Mejoras:
+    1. Se mejoro el manejo de la camara, haciendola girar al rededor del Eje Y
+    2. Se hizo un pizo con forma de tablero de aledrez, que se puede agrandar o disminuir 
+        las subdivisiones. 
+    3. Se creo un limite del piso, en este se manejo un cuadrado de lado 10; pero se puede aumentar.alignas
+    4. Las paredes se escalan deacuerdo al tamaño que se esta eligiendo en 'Propiedades de Escena'
+
+Observaciones:
+    1. No se logro automatizar la creacion de nuevos armarios si es que se aumenta el limite del piso.
 */
 
 #ifdef _WIN32
@@ -32,8 +48,8 @@ float camZoom = 0.05f;
 float lookAtX = 0.0f, lookAtZ = 0.0f;
 
 // Propiedades de la Escena
-const float FLOOR_BOUNDARY = 5.0f;
-const int FLOOR_DIVISIONS = 10.0f;
+const float piso = 5.0f;
+const int divionesPiso = 15.0f;
 
 void keyboard(unsigned char key, int x, int y) {
     switch (tolower(key)) {
@@ -58,26 +74,27 @@ void keyboard(unsigned char key, int x, int y) {
         case 'e': 
             camY += camZoom*10;
             if (camY > 20.0f) camY = 20.0f;
-
             break;
-            
+        case 27: 
+            exit(0);
+            break;
     }
 
     glutPostRedisplay(); 
 }
 
 void scene() {
-    float cellSize = (2.0f * FLOOR_BOUNDARY) / FLOOR_DIVISIONS;
+    float cellSize = (2.0f * piso) / divionesPiso;
 
-    for (int i = 0; i < FLOOR_DIVISIONS; ++i) {
-        for (int j = 0; j < FLOOR_DIVISIONS; ++j) {
+    for (int i = 0; i < divionesPiso; ++i) {
+        for (int j = 0; j < divionesPiso; ++j) {
             if ((i + j) % 2 == 0)
-                glColor3f(0.9f, 0.9f, 0.9f);  // Blanco
+                glColor3f(0.9f, 0.9f, 0.9f);  
             else
-                glColor3f(0.2f, 0.2f, 0.2f);  // Gris oscuro
+                glColor3f(0.2f, 0.2f, 0.2f);  
 
-            float x = -FLOOR_BOUNDARY + j * cellSize;
-            float z = -FLOOR_BOUNDARY + i * cellSize;
+            float x = -piso + j * cellSize;
+            float z = -piso + i * cellSize;
 
             glBegin(GL_QUADS);
                 glVertex3f(x, 0, z);
@@ -90,13 +107,13 @@ void scene() {
     
     glColor3f(0.4, 0.4, 0.4);
     glBegin(GL_QUADS);
-        glVertex3f(-FLOOR_BOUNDARY, 0, -FLOOR_BOUNDARY); glVertex3f(FLOOR_BOUNDARY, 0, -FLOOR_BOUNDARY);
-        glVertex3f(FLOOR_BOUNDARY, 4, -FLOOR_BOUNDARY);  glVertex3f(-FLOOR_BOUNDARY, 4, -FLOOR_BOUNDARY);
+        glVertex3f(-piso, 0, -piso); glVertex3f(piso, 0, -piso);
+        glVertex3f(piso, 4, -piso);  glVertex3f(-piso, 4, -piso);
 
     glEnd();
     glBegin(GL_QUADS);
-        glVertex3f(-FLOOR_BOUNDARY, 0, -FLOOR_BOUNDARY); glVertex3f(-FLOOR_BOUNDARY, 0, FLOOR_BOUNDARY);
-        glVertex3f(-FLOOR_BOUNDARY, 4, FLOOR_BOUNDARY); glVertex3f(-FLOOR_BOUNDARY, 4, -FLOOR_BOUNDARY);
+        glVertex3f(-piso, 0, -piso); glVertex3f(-piso, 0, piso);
+        glVertex3f(-piso, 4, piso); glVertex3f(-piso, 4, -piso);
     glEnd();
 }
 

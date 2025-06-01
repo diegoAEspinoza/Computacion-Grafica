@@ -1,12 +1,20 @@
 /*
 Nombre: Diego Alexhander Espinoza Huaman
 
-Mejoras:
-    1.
-    2.
-    3.
-    4.
+Controles:
+    Q: Para rotar la camara en sentido horario alrededor del Player (Cubo)
+    E: Para rotar la camara en sentido antihorario alrededor del Player (Cubo)
+    WASD : Para mover el Player (Cubo) 
+    Esc: Para salir de la simulacion
 
+Mejoras:
+    1. Se mejoro el manejo de la camara, haciendola girar al rededor del Player Player (Cubo)
+    2. Se hizo un pizo con forma de tablero de aledrez, que se puede aumentar el limite y
+        aumentar o disminuir las subdivisiones.
+    3. Se limito el camino del Player, por lo que no podra salir de limite del piso.
+
+Observaciones:
+    1. No se pudo implementar el manejo de la camara con el mouse.
 */
 
 #ifdef _WIN32
@@ -43,8 +51,8 @@ const float playerSize = 1.0f;
 const float playerHalfSize = playerSize / 2.0f+0.01f;
 
 // Propiedades de la Escena
-const float FLOOR_BOUNDARY = 5.0f;
-const int FLOOR_DIVISIONS = 20.0f;
+const float Piso = 7.0f;
+const int divionesPiso = 20.0f;
 
 
 // Dibujo de la Escena
@@ -61,17 +69,17 @@ void drawCoordinateAxes() {
 }
 
 void drawFloor() {
-    float cellSize = (2.0f * FLOOR_BOUNDARY) / FLOOR_DIVISIONS;
+    float cellSize = (2.0f * Piso) / divionesPiso;
 
-    for (int i = 0; i < FLOOR_DIVISIONS; ++i) {
-        for (int j = 0; j < FLOOR_DIVISIONS; ++j) {
+    for (int i = 0; i < divionesPiso; ++i) {
+        for (int j = 0; j < divionesPiso; ++j) {
             if ((i + j) % 2 == 0)
                 glColor3f(0.9f, 0.9f, 0.9f);  // Blanco
             else
                 glColor3f(0.2f, 0.2f, 0.2f);  // Gris oscuro
 
-            float x = -FLOOR_BOUNDARY + j * cellSize;
-            float z = -FLOOR_BOUNDARY + i * cellSize;
+            float x = -Piso + j * cellSize;
+            float z = -Piso + i * cellSize;
 
             glBegin(GL_QUADS);
                 glVertex3f(x, 0, z);
@@ -89,11 +97,11 @@ void movePlayer(float deltaX, float deltaZ) {
     float newPlayerX = playerX + deltaX;
     float newPlayerZ = playerZ + deltaZ;
 
-    if (newPlayerX >= -FLOOR_BOUNDARY + playerHalfSize && newPlayerX <= FLOOR_BOUNDARY - playerHalfSize) {
+    if (newPlayerX >= -Piso + playerHalfSize && newPlayerX <= Piso - playerHalfSize) {
         playerX = newPlayerX;
     }
 
-    if (newPlayerZ >= -FLOOR_BOUNDARY + playerHalfSize && newPlayerZ <= FLOOR_BOUNDARY - playerHalfSize) {
+    if (newPlayerZ >= -Piso + playerHalfSize && newPlayerZ <= Piso - playerHalfSize) {
         playerZ = newPlayerZ;
     }
 }
