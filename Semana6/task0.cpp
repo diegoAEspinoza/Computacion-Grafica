@@ -1,3 +1,14 @@
+/*
+Nombre: Diego Alexhander Espinoza Huaman
+
+Mejoras:
+    1.
+    2.
+    3.
+    4.
+
+*/
+
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -7,146 +18,177 @@
 #include <GL/glut.h>
 #endif
 
-#include <stdlib.h>
-#include <math.h>
-#include <ctype.h>
-#include <cstdlib>
-#include <vector> 
-#include <cstddef> 
-#include <string>    
-#include <sstream>   
-#include <ctime>  
-#define PI 3.141592653589793f
+#include <cmath>     
+#include <cctype>    
+#include <cstdlib>   
+
+// Dimensiones de la Pantalla
+int windowWidth = 800;
+int windowHeight = 600;
+
+// Propiedades de la Camara
+float camHorAngle = -0.5f; 
+float camDirectionX = 0.0f;
+float camDirectionZ = -1.0f;     
+const float cameraRotationSpeed = 0.05f;
+const float cameraToPlayer = 5.0f;
+const float camY = 5.0f; 
+const float cameraToPlayerY = 0.5f; 
+
+// Propiedades del Jugador
+float playerX = 0.0f;
+float playerZ = 0.0f;
+const float playerSpeed = 0.1f;
+const float playerSize = 1.0f;
+const float playerHalfSize = playerSize / 2.0f+0.01f;
+
+// Propiedades de la Escena
+const float FLOOR_BOUNDARY = 5.0f;
+const int FLOOR_DIVISIONS = 20.0f;
 
 
-float camaraHor =-0.5;
-float esferaX = 0;
-float esferaZ = 0;
-float paso = 0.1f;
-float limite = 5.0f;
-float dirZ = -1.0f;
-float dirX = 0.0f;
+// Dibujo de la Escena
 
-void actDirCamera(){
-    dirX = sin(camaraHor * PI);
-    dirZ = cos(camaraHor * PI);
-}
-
-
-void move(float x, float z) {
-    float nuevoX = esferaX + x;
-    float nuevoZ = esferaZ + z;
-
-    if (nuevoX >= -limite + 0.5f && nuevoX <= limite - 0.5f)
-        esferaX = nuevoX;
-
-    if (nuevoZ >= -limite + 0.5f && nuevoZ <= limite - 0.5f)
-        esferaZ = nuevoZ;
-}
-
-void keyboard(unsigned char key, int x, int y){
-    switch (toupper(key)) {
-        case 'W':
-            move(dirX * paso, dirZ * paso);
-            break;
-        case 'S':
-            move(-dirX * paso, -dirZ * paso);    
-            break;
-        case 'A':
-            move(-dirZ * paso, dirX * paso); // Perpendicular izquierda
-            break;
-        case 'D':
-            move(dirZ * paso, -dirX * paso); // Perpendicular derecha
-            break;
-        case 'Q':
-            camaraHor -= 0.05f;
-            actDirCamera();
-            break;
-        case 'E':
-            camaraHor += 0.05f;
-            actDirCamera();
-            break;
-    }
-    glutPostRedisplay();
-}
-
-
-
-void drawAxes() {
+void drawCoordinateAxes() {
     glBegin(GL_LINES);
-    glColor3f(1, 0, 0);
-        glVertex3f(-10, 0, 0); glVertex3f(10, 0, 0); // Eje X
-    glColor3f(0, 1, 0);
-        glVertex3f(0, -10, 0); glVertex3f(0, 10, 0); // Eje Y
-    glColor3f(0, 0, 1);
-        glVertex3f(0, 0, -10); glVertex3f(0, 0, 10); // Eje Z
+    glColor3f(1.0f, 0.0f, 0.0f);
+        glVertex3f(-10.0f, 0.0f, 0.0f); glVertex3f(10.0f, 0.0f, 0.0f);
+    glColor3f(0.0f, 1.0f, 0.0f);
+        glVertex3f(0.0f, -10.0f, 0.0f); glVertex3f(0.0f, 10.0f, 0.0f);
+    glColor3f(0.0f, 0.0f, 1.0f);
+        glVertex3f(0.0f, 0.0f, -10.0f); glVertex3f(0.0f, 0.0f, 10.0f);
     glEnd();
 }
 
-void piso(){
-    glColor3f(0.4, 0.4, 0.4);
-    glBegin(GL_QUADS);
-        glVertex3f(-5, 0, -5);
-        glVertex3f(-5, 0, 5);
-        glVertex3f(5, 0, 5);
-        glVertex3f(5, 0, -5);
-    glEnd();
+void drawFloor() {
+    float cellSize = (2.0f * FLOOR_BOUNDARY) / FLOOR_DIVISIONS;
+
+    for (int i = 0; i < FLOOR_DIVISIONS; ++i) {
+        for (int j = 0; j < FLOOR_DIVISIONS; ++j) {
+            if ((i + j) % 2 == 0)
+                glColor3f(0.9f, 0.9f, 0.9f);  // Blanco
+            else
+                glColor3f(0.2f, 0.2f, 0.2f);  // Gris oscuro
+
+            float x = -FLOOR_BOUNDARY + j * cellSize;
+            float z = -FLOOR_BOUNDARY + i * cellSize;
+
+            glBegin(GL_QUADS);
+                glVertex3f(x, 0, z);
+                glVertex3f(x + cellSize, 0, z);
+                glVertex3f(x + cellSize, 0, z + cellSize);
+                glVertex3f(x, 0, z + cellSize);
+            glEnd();
+        }
+    }
 }
 
-void camera(){
+
+// Funciones del Jugador
+void movePlayer(float deltaX, float deltaZ) {
+    float newPlayerX = playerX + deltaX;
+    float newPlayerZ = playerZ + deltaZ;
+
+    if (newPlayerX >= -FLOOR_BOUNDARY + playerHalfSize && newPlayerX <= FLOOR_BOUNDARY - playerHalfSize) {
+        playerX = newPlayerX;
+    }
+
+    if (newPlayerZ >= -FLOOR_BOUNDARY + playerHalfSize && newPlayerZ <= FLOOR_BOUNDARY - playerHalfSize) {
+        playerZ = newPlayerZ;
+    }
+}
+
+void player(){
+    glPushMatrix();
+        glLineWidth(2);
+        glColor3f(1.0f, 0.0f, 1.0f); 
+        glTranslatef(playerX, playerHalfSize, playerZ);
+        glutWireCube(playerSize);
+        glLineWidth(1);
+    glPopMatrix();
+}
+    
+// Camara
+void setupCameraView() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(60.0, 800.0 / 600.0, 0.1, 100.0);
-
+    gluPerspective(60.0, (float)windowWidth / (float)windowHeight,0.1, 100.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    float distancia = 5;
-    float camX = esferaX - dirX * distancia;
-    float camZ = esferaZ - dirZ * distancia;
+    camDirectionX = sin(camHorAngle * M_PI);
+    camDirectionZ = cos(camHorAngle * M_PI);
+
+    float camX = playerX - camDirectionX * cameraToPlayer;
+    float camZ = playerZ - camDirectionZ * cameraToPlayer;
 
     gluLookAt(
-        camX, 5, camZ,              // Posición de la cámara
-        esferaX, 0.5, esferaZ,      // Mira hacia la esfera (jugador)
-        0, 1, 0                     // Vector "arriba"
+        camX, camY, camZ,                     
+        playerX, cameraToPlayerY, playerZ, 
+        0.0f, 1.0f, 0.0f                                     
     );
 }
 
 
-void display() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    camera();
+// Teclado
+void Keyboard(unsigned char key, int x, int y) {
+    switch (toupper(key)) {
+        case 'W': 
+            movePlayer(camDirectionX * playerSpeed, camDirectionZ * playerSpeed);
+            break;
+        case 'S': 
+            movePlayer(-camDirectionX * playerSpeed, -camDirectionZ * playerSpeed);
+            break;
+        case 'A': 
+            movePlayer(-camDirectionZ * playerSpeed, camDirectionX * playerSpeed);
+            break;
+        case 'D': 
+            movePlayer(camDirectionZ * playerSpeed, -camDirectionX * playerSpeed);
+            break;
 
- 
-
-    glPushMatrix();
-        glColor3f(1,1,1);
-        glTranslated(esferaX, 0.5, esferaZ);
-        glutWireCube(1);
-    glPopMatrix();
-    piso();
-    drawAxes();
-
-    glutSwapBuffers();
+        case 'Q': 
+            camHorAngle -= cameraRotationSpeed;
+            break;
+        case 'E': 
+            camHorAngle += cameraRotationSpeed;
+            break;
+        case 27: 
+            exit(0);
+            break;
+    }
+    glutPostRedisplay(); 
 }
 
-void reshape (int w, int h) {
-    glViewport (0, 0, (GLsizei) w, (GLsizei) h);
+
+void displayScene() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    setupCameraView(); 
+    player();
+    drawFloor(); 
+    drawCoordinateAxes(); 
+
+    glutSwapBuffers(); 
+}
+
+
+void reshape(int width, int height) {
+    glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 }
 
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    glutInitWindowSize(800, 600);
-    glutCreateWindow("Semana 10");
+    glutInitWindowSize(windowWidth, windowHeight);
+    glutCreateWindow("Ecena en 3D");
 
-    glEnable(GL_DEPTH_TEST);
-    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glEnable(GL_DEPTH_TEST); 
+    glClearColor(0.1f, 0.1f, 0.15f, 1.0f); 
 
-    glutDisplayFunc(display);
+    glutDisplayFunc(displayScene);
     glutReshapeFunc(reshape);
-    glutKeyboardFunc(keyboard);
+    glutKeyboardFunc(Keyboard);
 
-    glutMainLoop();
+    glutMainLoop(); 
     return 0;
 }
