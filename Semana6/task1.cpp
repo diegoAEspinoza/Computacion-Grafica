@@ -27,13 +27,13 @@ Mejoras:
 
 // Propiedades de la Camara
 float camAngle = 0.5f, camRadius = 10.0f;  
-float camY = 5.0f;
+float camY = 8.0f;
 float camZoom = 0.05f;
 float lookAtX = 0.0f, lookAtZ = 0.0f;
 
 // Propiedades de la Escena
 const float FLOOR_BOUNDARY = 5.0f;
-const int FLOOR_DIVISIONS = 15.0f;
+const int FLOOR_DIVISIONS = 10.0f;
 
 void keyboard(unsigned char key, int x, int y) {
     switch (tolower(key)) {
@@ -51,6 +51,16 @@ void keyboard(unsigned char key, int x, int y) {
         case 'd': 
             camAngle += camZoom;
             break;
+        case 'q': 
+            camY -= camZoom*10;
+            if (camY < 3.0f) camY = 3.0f;
+            break;
+        case 'e': 
+            camY += camZoom*10;
+            if (camY > 20.0f) camY = 20.0f;
+
+            break;
+            
     }
 
     glutPostRedisplay(); 
@@ -90,6 +100,60 @@ void scene() {
     glEnd();
 }
 
+void dibujarArmario(float posX, float posY, float posZ, float anguloRotacionY) {
+    glPushMatrix(); 
+    glTranslatef(posX, posY, posZ);
+    glRotatef(anguloRotacionY, 0.0f, 1.0f, 0.0f); 
+
+    glColor3f(0.5f, 0.35f, 0.2f);
+    glPushMatrix();
+        glTranslatef(-4.9f, 1.5f, -3.85f);
+        glScalef(0.15f, 3.0f, 2.0f);
+        glutSolidCube(1.0f);
+    glPopMatrix();
+
+    // Pared derecha 
+    glPushMatrix();
+        glColor3f(0.6f, 0.3f, 0.0f);
+        glTranslatef(-4.68f, 1.5f, -4.8f);
+        glRotatef(-90.0f, 0.0f, 1.0f, 0.0f);
+        glScalef(0.15f, 3.0f, 0.6f);
+        glutSolidCube(1.0f);
+    glPopMatrix();
+
+    // Pared Izquierda 
+    glPushMatrix();
+        glColor3f(0.6f, 0.3f, 0.0f); 
+        glTranslatef(-4.68f, 1.5f, -2.9f);
+        glRotatef(-90.0f, 0.0f, 1.0f, 0.0f);
+        glScalef(0.15f, 3.0f, 0.6f);
+        glutSolidCube(1.0f);
+    glPopMatrix();
+
+    // Techo 
+    glPushMatrix();
+        glColor3f(0.6f, 0.3f, 0.0f);
+        glTranslatef(-4.68f, 3.0f, -3.85f);
+        glRotatef(-90.0f, 0.0f, 0.0f, 1.0f);
+        glScalef(0.15f, 0.6f, 2.0f);
+        glutSolidCube(1.0f);
+    glPopMatrix();
+
+    // Subsecciones 
+    for (int i = 0; i < 3; i++) {
+        glColor3f(0.6f, 0.3f, 0.25f);
+        glPushMatrix();
+            glTranslatef(-4.68f, (float)i + 0.2f, -3.85f);
+            glRotatef(-90.0f, 0.0f, 0.0f, 1.0f);
+            glScalef(0.15f, 0.6f, 1.8f); 
+            glutSolidCube(1.0f);
+        glPopMatrix();
+    }
+
+    glPopMatrix(); 
+}
+
+
 void mesa(float anchoMesa, float altoMesa, float profundidadMesa, float alturaPata, float anchoPata) {
 
     // Dibuja la Mesa
@@ -123,7 +187,6 @@ void mesa(float anchoMesa, float altoMesa, float profundidadMesa, float alturaPa
         glPopMatrix();
     }
 }
-
 
 void camera() {
     glMatrixMode(GL_PROJECTION);
@@ -164,7 +227,15 @@ void display() {
     glLineWidth(1.5);
 
     // Mesa
-    mesa(3.0f, 0.1f, 3.0f, 1.0f, 0.1f); 
+    mesa(3.0f, 0.1f, 3.0f, 1.0f, 0.1f);
+    for (int i = 0; i < 3; i++)
+    {
+        dibujarArmario(i*-3, 0, 0,-90);
+        dibujarArmario(0, 0, i*3,0);
+    }
+     
+
+
 
     float yMesa = 1.40f;
     // Cubo
