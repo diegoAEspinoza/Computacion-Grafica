@@ -1,0 +1,9 @@
+# depslib dependency file v1.0
+1721709761 source:c:\users\reyna\desktop\hfhhf\main.cpp
+	<windows.h>
+	<GLUT/glut.h>
+	<GL/glut.h>
+	<stdlib.h>
+	<cmath>
+	<iostream>
+

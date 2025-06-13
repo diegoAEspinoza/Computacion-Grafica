@@ -29,6 +29,28 @@ float amarillo[3]     = {1, 1, 0},
     aqua[3]         = {0, 1, 0.5f},
     morado[3] = {0.5f, 0.0f, 0.5f};
 
+struct WindowConfig {
+    int x;
+    int y;
+    const char* title;
+    void (*displayFunc)(void);      // Puntero a la función de display
+    void (*reshapeFunc)(int, int);  // Puntero a la función de reshape
+};
+
+
+void ejes(float a){
+    glColor3fv(rojo);
+    glBegin(GL_POINTS);
+    for (int t = 0; t < 100; t++)
+    {glVertex2f(-a + 2*a * t * 1/100, 0);}
+    glEnd();
+    glColor3fv(azul);
+    glBegin(GL_POINTS);
+    for (int t = 0; t < 100; t++)
+    {glVertex2f(0, -a + 2 * a * t * 1/100);}
+    glEnd();
+}
+
 void cardioide(float x, float y, float a, float b, float angulo, float n, float m, GLenum Modo, float *RGB){
     glColor3fv(RGB);
     glBegin(Modo);
@@ -102,7 +124,7 @@ void flor(GLenum modo){
 void display1(void) {
     glClearColor(0, 0, 0, 0);  
     glClear(GL_COLOR_BUFFER_BIT);
-    
+    ejes(4);
     flor(GL_POINTS);
 
     glutSwapBuffers();  
@@ -111,14 +133,118 @@ void display1(void) {
 void display2(void){
     glClearColor(0,0,0,0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    ejes(4);
     flor(GL_POINTS);
 
-    glTranslated(3,0,0);
+    glTranslated(2.5,0,0);
     flor(GL_POLYGON);
 
     glutSwapBuffers();
 }
+
+
+void display3(void)
+{
+    glClearColor(0,0,0,0);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glMatrixMode(GL_MODELVIEW); 
+    
+    glLoadIdentity();
+    gluLookAt (0, 0, 8.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0);
+    ejes(8);
+
+    flor(GL_POINTS);
+    glTranslated(0,1,0);
+    flor(GL_POLYGON);
+
+    glutSwapBuffers();
+}
+
+void display4(void)
+{
+    glClearColor(0,0,0,0);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glMatrixMode(GL_MODELVIEW); 
+
+    glLoadIdentity();
+    gluLookAt (0, 0, 8.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    ejes(8);
+
+    flor(GL_POINTS);
+    glTranslated(0,0,3);
+    flor(GL_POLYGON);
+
+    glutSwapBuffers();
+}
+
+void display5(void)
+{
+    glClearColor(0,0,0,0);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+        glMatrixMode(GL_MODELVIEW); 
+
+    glLoadIdentity();
+    gluLookAt (0, 0, 6.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    ejes(6);
+
+    flor(GL_POINTS);
+    glTranslated(4,0,-9);
+    flor(GL_POLYGON);
+    glTranslated(-7,0,5);
+    flor(GL_POLYGON);
+
+    glutSwapBuffers();
+}
+
+void display6(void)
+{
+    glClearColor(0,0,0,0);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glLoadIdentity();
+    gluLookAt (0, 0, 4.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+
+    ejes(4);
+    flor(GL_POINTS);
+    glTranslated(2,0,0);
+    glRotated(45,0,0,1);
+    ejes(6);
+    flor(GL_POLYGON);
+
+
+    glutSwapBuffers();
+}
+
+void reshape2D(int w, int h)
+{
+    if (h == 0) h = 1;
+    float aspect_ratio = (float)w / (float)h;
+
+    glViewport(0, 0, w, h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    
+    gluOrtho2D(-4.0 * aspect_ratio, 4.0 * aspect_ratio, -4.0, 4.0);
+
+    glMatrixMode(GL_MODELVIEW);
+}
+
+void reshape3D(int w, int h)
+{
+    if (h == 0) h = 1;
+    float aspect_ratio = (float)w / (float)h;
+
+    glViewport(0, 0, w, h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+    glFrustum(-1.5 * aspect_ratio, 1.5 * aspect_ratio, -1.5, 1.5, 1.5, 25.0);
+    
+    glMatrixMode(GL_MODELVIEW);
+}
+
 
 void inicio()
 {   
@@ -127,23 +253,39 @@ void inicio()
     gluOrtho2D(-a,a,-a,a);
     glClearColor(0,0,0,0);
 }
+void inicio3D()
+{
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity(); 
+    
+    gluPerspective(60.0, 1.0, 1.0, 100.0); 
+    glClearColor(0,0,0,0);
+}
 
 int main(int argc, char *argv[])
 {
-    glutInit(&argc, argv); //Inicializa la ventana
+    WindowConfig windows[] = {
+        {1,   1,   "Primer Codigo",                display1, reshape2D},
+        {420, 1,   "Segundo Codigo",        display2, reshape2D},
+        {840, 1,   "Tercer Codigo",        display3, reshape3D},
+        {1,   390, "Cuarto Codigo",        display4, reshape3D},
+        {420, 390, "Quinto Codigo",    display5, reshape3D},
+        {840, 390, "Sexto Codigo",            display6, reshape3D}
+    };
+
+    glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-    glutInitWindowSize(400,400); //Tamaño de la ventana
+    glutInitWindowSize(300, 300);
 
-    glutInitWindowPosition(1,1); //Posición de la ventana
-    glutCreateWindow("Flor: Figura base");
-    glutDisplayFunc(display1); //Evento renderizado
-    inicio();
-
-    glutInitWindowPosition(420,1); //Posición de la ventana
-    glutCreateWindow("Flor: Traslacion en X");
-    glutDisplayFunc(display2); //Evento renderizado
-    inicio();
+    int num_windows = sizeof(windows) / sizeof(WindowConfig);
+    for (int i = 0; i < num_windows; i++) {
+        glutInitWindowPosition(windows[i].x, windows[i].y);
+        glutCreateWindow(windows[i].title);
+        glutDisplayFunc(windows[i].displayFunc);
+        glutReshapeFunc(windows[i].reshapeFunc);
+    }
 
     glutMainLoop();
+
     return EXIT_SUCCESS;
 }

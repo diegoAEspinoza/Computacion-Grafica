@@ -1,7 +1,7 @@
 # Compiler and flags
 CXX      = g++
 CXXFLAGS = -Wall -g $(shell pkg-config --cflags glfw3 glew)
-LDFLAGS  = $(shell pkg-config --libs glfw3 glew glut) -lGL
+LDFLAGS  = $(shell pkg-config --libs glfw3 glew glut ) -lGL
 
 # Directorios donde se encuentran los archivos .cpp
 SOURCES_DIRS = Semana9
