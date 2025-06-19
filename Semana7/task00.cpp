@@ -1,85 +1,84 @@
+/*
+Nombre: Diego Alexhander Espinoza Huaman
+
+Resumen:
+    - Se creo una funcion que meneje la funcion de la camara, tambien se optimizo la iniciacion de
+      varias pantallas mediante una estructura.
+    
+    - En los diferentes 'displays', se grafico con el mismo color y vemos que en las diferentes pantallas
+      se logra observar la iluminacion y mas en la ultima que tiene un cambio de color. 
+*/
+
 #include <GL/glut.h>
 #include <GL/gl.h>
 #include <math.h>
 #include <iostream>
 #include <string.h>
 
+struct WindowConfig {
+    int x;
+    int y;
+    const char* title;
+    void (*displayFunc)(void);      
+    void (*reshapeFunc)(int, int);  
+};
+
 // VARIABLES GLOBALES
 float rotX = 0, rotY = 0;
 bool mousePressed = false;
 int lastX, lastY;
 
-
-// SIN ILUMINACIÓN
-void Sin_Iluminacion() {
-    // NO SE HACE CALCULOS DE ILUMINACION
-    glDisable(GL_LIGHTING);
-    // DEFINIMOS EL COLOR DEL OBJETO
-    glColor3f(1.0f, 0.0f, 0.0f);
-}
-
-void ILuminacionAmbiental(){
+void luzAmbiental(){
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
 
-    // Luz Ambiental
-    GLfloat luzAmbiental[]={0.5, 0.5, 0.5, 1};
-    GLfloat luzDifusa[]={0, 0, 0, 1};
-    GLfloat luzEspecular[]={0, 0, 0, 1};
-
+    GLfloat posicionLuz[]={1, 1, 1, 1};
+    GLfloat luzAmbiental[]={0.1, 0.35, 0.1, 1};
+    glLightfv(GL_LIGHT0, GL_POSITION, posicionLuz);
     glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiental);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular);
 
-    // Obejto
-    GLfloat materialAmbiental[] = {0.8, 0.2, 0.2, 1};
+    GLfloat materialAmbiental[] = {0.1, 0.2, 0.2, 1};
     glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbiental);
 }
 
-void ILuminacionDifusa(){
+void luzDifusa(){
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
 
-    // Luz Ambiental
-    GLfloat posicionLuz[]={2, 2, 2, 1};
-    glLightfv(GL_LIGHT0, GL_POSITION, posicionLuz);
+    GLfloat posicionLuz[]={3, 3, 0, 1};
+    GLfloat luzAmbiental[]={0.1, 0.35, 0.1, 1};
+    GLfloat luzDifusa[]={0.5, 0.7, 0.9, 1};
     
-    GLfloat luzAmbiental[]={0.5, 0.5, 0.5, 1};
-    GLfloat luzDifusa[]={0.8, 0.8, 0.8, 1};
-    GLfloat luzEspecular[]={0, 0, 0, 1};
-
+    glLightfv(GL_LIGHT0, GL_POSITION, posicionLuz);
     glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiental);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular);
 
-    // Obejto
-    GLfloat materialAmbiental[] = {0.8, 0.2, 0.2, 1};
-    GLfloat materialDifuso[] = {0.8, 0.2, 0.2, 1};
+    GLfloat materialAmbiental[] = {0.3, 0.7, 0.5, 1};
+    GLfloat materialDifuso[] = {0.5, 0.3, 0.7, 1};
     
     glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbiental);
     glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDifuso);
 }
 
-void ILuminacionEspecular(){
+void luzEspecular(){
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
 
-    GLfloat posicionLuz[]={2, 2, 2, 1};
-    glLightfv(GL_LIGHT0, GL_POSITION, posicionLuz);
-    
-    GLfloat luzAmbiental[]={0.5, 0.5, 0.5, 1};
-    GLfloat luzDifusa[]={0.8, 0.8, 0.8, 1};
+    GLfloat posicionLuz[]={3, 3, 3, 1};
+    GLfloat luzAmbiental[]={0.1, 0.35, 0.1, 1};
+    GLfloat luzDifusa[]={0.5, 0.7, 0.9, 1};
     GLfloat luzEspecular[]={1, 1, 1, 1};
 
+    glLightfv(GL_LIGHT0, GL_POSITION, posicionLuz);
     glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiental);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa);
     glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular);
 
     // Obejto
-    GLfloat materialAmbiental[] = {0.8, 0.2, 0.2, 1};
-    GLfloat materialDifuso[]    = {0.8, 0.2, 0.2, 1};
+    GLfloat materialAmbiental[] = {0.3, 0.7, 0.5, 1};
+    GLfloat materialDifuso[] = {0.5, 0.3, 0.7, 1};
     GLfloat materialEspecular[] = {1, 1, 1, 1};
-    GLfloat materialbrillo[]    = {20};
+    GLfloat materialbrillo[]    = {50};
 
     glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbiental);
     glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDifuso);
@@ -87,100 +86,82 @@ void ILuminacionEspecular(){
     glMaterialfv(GL_FRONT, GL_SHININESS, materialbrillo);
 }
 
-void Iluminacion_Combinada(){
+void luzCombinada(){
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_LIGHT1);
+    glEnable(GL_LIGHT2); 
 
-    // Luz Principal GL_LIGHT0
-    GLfloat posicionLuz_0[]={2, 2, 2, 1};
-    GLfloat luzAmbiental_0[]={0.2, 0.2, 0.2, 1};
-    GLfloat luzDifusa_0[]={0.8, 0.8, 0.8, 1};
-    GLfloat luzEspecular_0[]={1, 1, 1, 1};
+    // Luz Principal
+    GLfloat PosicionLuz0[] = {2.0, 2.0, 4.0, 1.0};  
+    GLfloat Luz0Ambiental[] = {0.1, 0.1, 0.1, 1.0};
+    GLfloat Luz0Difusa[] = {1.0, 1.0, 1.0, 1.0};    
+    GLfloat Luz0Especular[] = {0.8, 1.0, 0.8, 1.0};
 
-    glLightfv(GL_LIGHT0, GL_POSITION, posicionLuz_0);
-    glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiental_0);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa_0);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular_0);
+    glLightfv(GL_LIGHT0, GL_POSITION, PosicionLuz0);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, Luz0Ambiental);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, Luz0Difusa);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, Luz0Especular);
 
-    GLfloat materialAmbiental[] = {0.8, 0.2, 0.2, 1};
-    GLfloat materialDifuso[]    = {0.8, 0.2, 0.2, 1};
-    GLfloat materialEspecular[] = {1, 1, 1, 1};
-    GLfloat materialbrillo[]    = {20};
+    // Luz 1
+    GLfloat PosicionLuz1[] = {0.0, -1.0, -1.0, 0.0}; 
+    GLfloat Luz1Ambiental[] = {0.0, 0.0, 0.0, 1.0};  
+    GLfloat Luz1Difusa[] = {0.2, 0.9, 0.7, 1.0};     
+    GLfloat Luz1Especular[] = {0.4, 0.4, 0.7, 1.0};  
 
-    glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbiental);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDifuso);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, materialEspecular);
-    glMaterialfv(GL_FRONT, GL_SHININESS, materialbrillo);
+    glLightfv(GL_LIGHT1, GL_POSITION, PosicionLuz1);
+    glLightfv(GL_LIGHT1, GL_AMBIENT, Luz1Ambiental);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, Luz1Difusa);
+    glLightfv(GL_LIGHT1, GL_SPECULAR, Luz1Especular);
+    
+    // Luz 2
+    GLfloat PosicionLuz2[] = {3.0, 0.0, 3.0, 1.0};    
+    GLfloat Luz2Difusa[] = {0.8, 0.8, 0.8, 1.0};      
+    GLfloat Luz2Especular[] = {0.5, 0.5, 0.5, 1.0};    
 
-    // Luz Secuandaria (GL_LIGHT1)
-    GLfloat posicionLuz_1[]={-2, -2, 2, 1};
-    GLfloat luzAmbiental_1[]={0.2, 0.2, 0.2, 1};
-    GLfloat luzDifusa_1[]={0.8, 0.8, 0.8, 1};
-    GLfloat luzEspecular_1[]={1, 1, 1, 1};
+    glLightfv(GL_LIGHT2, GL_POSITION, PosicionLuz2);
+    glLightfv(GL_LIGHT2, GL_DIFFUSE, Luz2Difusa);
+    glLightfv(GL_LIGHT2, GL_SPECULAR, Luz2Especular);
 
-    glLightfv(GL_LIGHT0, GL_POSITION, posicionLuz_1);
-    glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiental_1);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa_1);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular_1);
 
-    GLfloat materialAmbiental_1[] = {0.8, 0.2, 0.2, 1};
-    GLfloat materialDifuso_1[]    = {0.8, 0.2, 0.2, 1};
-    GLfloat materialEspecular_1[] = {1, 1, 1, 1};
-    GLfloat materialbrillo_1[]    = {20};
+    GLfloat MaterialAmbiental[] = {0.8, 0.2, 0.2, 1.0};
+    GLfloat MaterialDifuso[] = {0.8, 0.2, 0.2, 1.0};
+    GLfloat MaterialEspecular[] = {1.0, 1.0, 1.0, 1.0};
+    GLfloat MaterialBrillo[] = {50.0};
 
-    glMaterialfv(GL_FRONT, GL_AMBIENT, materialAmbiental_1);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDifuso_1);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, materialEspecular_1);
-    glMaterialfv(GL_FRONT, GL_SHININESS, materialbrillo_1);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, MaterialAmbiental);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, MaterialDifuso);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, MaterialEspecular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, MaterialBrillo);
 }
 
-// MOSTRAR EN PANTALLA
-void display() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+void camera() {
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(60.0, 800.0 / 600.0, 0.1, 100.0);
 
+    glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    // CÁMARA
     gluLookAt(
-        0, 0, 5,
-        0, 0, 0,
-        0, 1, 0
+        2, 3, 2,          
+        0, 0.5, 0,     
+        0, 1, 0                    
     );
-
-    // ROTACIÓN DE LA ESFERA
-    glRotatef(rotX, 1, 0, 0);
-    glRotatef(rotY, 0, 1, 0);
-
-    // LLAMAMOS LA FUNCIÓN 1 DE ILUMINACIÓN
-    // Sin_Iluminacion();
-    // ILuminacionAmbiental();
-    // ILuminacionDifusa();
-    ILuminacionEspecular();
-
-    // DIBUJAMOS UNA ESFERA SÓLIDA
-        glColor3f(0.5,0.25,1);
-        glutSolidCube(3);
-
-    //glDisable(GL_LIGHTING);
-
-    glutSwapBuffers();
 }
 
-// MANEJAR EVENTOS CUANDO SE HACE CLIC
 void mouse(int button, int state, int x, int y) {
     if(button == GLUT_LEFT_BUTTON) {
-        if(state == GLUT_DOWN) { // CUANDO SE PRESIONA
+        if(state == GLUT_DOWN) { 
             mousePressed = true;
-            lastX = x; // SE GUARDA LA POSICION X
-            lastY = y; // SE GUARDA LA POSICION Y
+            lastX = x; 
+            lastY = y; 
         } else {
             mousePressed = false;
         }
     }
 }
 
-// PERMITEN RORTAR EL OBJETO
 void mouseMotion(int x, int y) {
     if(mousePressed) {
         rotY += (x - lastX) * 0.5f;
@@ -191,7 +172,60 @@ void mouseMotion(int x, int y) {
     }
 }
 
-// AJUSTA EL AREA DE DIBUJO AL TAMAÑO DE LA VENTANA
+void display1() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    camera();
+    glRotatef(rotX, 1, 0, 0);
+    glRotatef(rotY, 0, 1, 0);
+
+    luzAmbiental();
+    
+    glColor3f(1,0,1);
+    glutSolidCone(1,2,30,30);
+    glutSwapBuffers();
+}
+
+void display2() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    camera();
+    glRotatef(rotX, 1, 0, 0);
+    glRotatef(rotY, 0, 1, 0);
+
+    luzDifusa();
+
+    glColor3f(1,0,1);
+    glutSolidTeapot(1); 
+    glutSwapBuffers();
+}
+
+void display3() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    camera();
+    glRotatef(rotX, 1, 0, 0);
+    glRotatef(rotY, 0, 1, 0);
+
+    luzEspecular();
+
+    glColor3f(1,0,1);
+    glutSolidTorus(0.5, 1, 20, 30); 
+    glutSwapBuffers();
+}
+
+void display4() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    camera();
+
+    glRotatef(rotX, 1, 0, 0);
+    glRotatef(rotY, 0, 1, 0);
+
+    luzCombinada();
+    glColor3f(1,0,1);
+    glutSolidDodecahedron();
+    glutSwapBuffers();
+}
+
+
 void reshape(int w, int h) {
     glViewport(0, 0, w, h);
     glMatrixMode(GL_PROJECTION);
@@ -201,29 +235,32 @@ void reshape(int w, int h) {
 }
 
 
-int main(int argc, char** argv) {
+int main(int argc, char *argv[]){
+ WindowConfig windows[] = {
+        {1,   50, "Ambiental",       display1, reshape},
+        {315, 50, "Ambiental y Difusa",       display2, reshape},
+        {630, 50, "Ambiental ,Difusa y ESpecular", display3, reshape},
+        {945, 50, "3 tipos de Luces",  display4, reshape},
+    };
+
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    glutInitWindowSize(800, 600);
-    glutCreateWindow("ILUMINACION OpenGL - ESFERA 3D");
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+    glutInitWindowSize(300, 300);
 
-    // CONFIGURACION INICIAL
-    glEnable(GL_DEPTH_TEST); // PRUEBA DE PROFUNDIDAD
-    // PERMITE QUE LOS COLORES DEFINIDOS SE USEN COMO PARTE DEL MATERIAL DEL OBJETO
-    glEnable(GL_COLOR_MATERIAL);
-    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    int num_windows = sizeof(windows) / sizeof(WindowConfig);
+    for (int i = 0; i < num_windows; i++) {
+        glEnable(GL_DEPTH_TEST); 
+        glEnable(GL_COLOR_MATERIAL);
+        glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
-    // HABILITAR NORMALIZACION AUTOMATICA
-    glEnable(GL_NORMALIZE);
-
-    // CALLBACKS
-    glutDisplayFunc(display);
-    glutMouseFunc(mouse);
-    glutMotionFunc(mouseMotion);
-    glutReshapeFunc(reshape);
-
-
+        glutInitWindowPosition(windows[i].x, windows[i].y);
+        glutCreateWindow(windows[i].title);
+        glutDisplayFunc(windows[i].displayFunc);
+        glutReshapeFunc(windows[i].reshapeFunc);
+        glutMouseFunc(mouse);
+        glutMotionFunc(mouseMotion);
+    }
     glutMainLoop();
-    return 0;
+    return EXIT_SUCCESS;
 }
