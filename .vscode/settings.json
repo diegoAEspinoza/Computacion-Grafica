@@ -5,6 +5,10 @@
         "iosfwd": "cpp",
         "cstdlib": "cpp",
         "cctype": "cpp",
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "array": "cpp",
+        "string": "cpp",
+        "string_view": "cpp",
+        "span": "cpp"
     }
 }
