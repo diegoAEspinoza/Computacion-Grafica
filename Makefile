@@ -1,26 +1,34 @@
-# Compiler and flags
+# Compilador y flags
 CXX      = g++
-CXXFLAGS = -Wall -g $(shell pkg-config --cflags glfw3 glew)
+CXXFLAGS = -Wall -g -Iinclude $(shell pkg-config --cflags glfw3 glew)
 LDFLAGS  = $(shell pkg-config --libs glfw3 glew glut) -lGL
 
-# Directorios donde se encuentran los archivos .cpp
-SOURCES_DIRS = Ejemplos
+# Directorios
+SRC_DIR = src
+INC_DIR = include
+OBJ_DIR = obj
+BIN_DIR = bin
 
+# Archivos fuente y objeto
+SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
+OBJECTS = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SOURCES))
 
+# Nombre del ejecutable final
+TARGET = $(BIN_DIR)/sistemasolar
 
-# Buscar todos los archivos .cpp en los directorios
-CPP_FILES = $(foreach dir, $(SOURCES_DIRS), $(wildcard $(dir)/*.cpp))
+# Regla por defecto
+all: $(TARGET)
 
-# Crear una lista de los nombres de los ejecutables basados en los archivos .cpp
-TARGETS = $(CPP_FILES:.cpp=)
+# Compilar el ejecutable a partir de los objetos
+$(TARGET): $(OBJECTS)
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
-# Default target
-all: $(TARGETS)
+# Compilar cada .cpp en su .o correspondiente
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(INC_DIR)/%.h
+	@mkdir -p $(OBJ_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Regla para compilar cada archivo .cpp en su respectivo ejecutable
-%: %.cpp
-	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
-
-# Clean up build artifacts
+# Limpiar
 clean:
-	rm -f $(TARGETS)
+	rm -rf $(OBJ_DIR) $(BIN_DIR)
