@@ -145,7 +145,6 @@ void display() {
     glLoadIdentity();
     gluLookAt(0, 30, 25, 0, 0, 0, 0, 1, 0);
 
-    // Dibuja todas las órbitas de los planetas
     for (int i = 0; i < 8; i++) {
         dibujarOrbita(orbitas[i]);
     }
@@ -153,11 +152,11 @@ void display() {
     // El Sol 
     glEnable(GL_LIGHTING);
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, textureIDs[0]);
-    GLUquadric* quad = gluNewQuadric();
-    gluQuadricTexture(quad, GL_TRUE);
-    gluSphere(quad, 1.5, 40, 40);
-    gluDeleteQuadric(quad);
+        glBindTexture(GL_TEXTURE_2D, textureIDs[0]);
+        GLUquadric* quad = gluNewQuadric();
+        gluQuadricTexture(quad, GL_TRUE);
+        gluSphere(quad, 1.5, 40, 40);
+        gluDeleteQuadric(quad);
 
     // Mercurio
     dibujarPlaneta(0.20, 4.7, orbitas[0], textureIDs[1]); 
