@@ -37,14 +37,14 @@ float camY = 40.0f;
 float camZoom = 0.05f;
 float lookAtX = 0.0f, lookAtZ = 0.0f;
 
-float camY_min = 10.0f;
+float camY_min = 0.0f;
 float camY_max = 60.0f;
 
 // VARIABLES GLOBALES
 Orbita orbitas[8];
 GLuint textureIDs[12]; 
 std::vector<Asteroide> cinturonAsteroides;
-
+GLUquadric* quadric_obj;
 
 float tiempo = 0.0f;
 
@@ -232,23 +232,20 @@ void dibujarCinturon() {
     
     glBindTexture(GL_TEXTURE_2D, textureIDs[11]); 
 
+    // Pre-configuramos nuestro objeto cuádrico reutilizable
+    gluQuadricTexture(quadric_obj, GL_TRUE);
+
     for (const auto& ast : cinturonAsteroides) {
         glPushMatrix();
 
         float angulo = tiempo * ast.velocidadOrbita + ast.anguloInicial;
         float x = cos(angulo) * ast.radioX;
         float z = sin(angulo) * ast.radioZ;
-
         glTranslatef(x, 0.0f, z);
         glRotatef(tiempo * ast.velocidadRotacion, ast.ejeRotacion[0], ast.ejeRotacion[1], ast.ejeRotacion[2]);
         
 
-        GLUquadric* quad = gluNewQuadric();
-        gluQuadricTexture(quad, GL_TRUE); 
-        
-        gluSphere(quad, ast.escala, 10, 10); 
-        
-        gluDeleteQuadric(quad);
+        gluSphere(quadric_obj, ast.escala, 50, 50); 
 
         glPopMatrix();
     }
@@ -312,29 +309,31 @@ void dibujarPlaneta(
     float radioEsfera, float velocidadOrbita, const Orbita& orbita,
     GLuint planetaTextureID, 
     GLuint anilloTextureID = 0,  
-    float inclinacionAnillo = 25.0f 
+    float inclinacionAnillo = 25.0f,
+    float inclinacionAxial = 0.0f 
 ) {
     glPushMatrix(); 
-        
         
         float angulo = tiempo * velocidadOrbita;
         float x = cos(angulo) * orbita.radioX;
         float z = sin(angulo) * orbita.radioZ;
         glTranslatef(x, 0.0f, z);
 
-        glPushMatrix(); 
+        glPushMatrix();
             glEnable(GL_LIGHTING);
             glEnable(GL_TEXTURE_2D);
             glBindTexture(GL_TEXTURE_2D, planetaTextureID);
+            
+           
+            glRotatef(inclinacionAxial, 0.0f, 0.0f, 1.0f);
+            
             glRotatef(tiempo * 50.0f, 0.0f, 1.0f, 0.0f);
             
-            GLUquadric* quad = gluNewQuadric();
-            gluQuadricTexture(quad, GL_TRUE);
-            gluSphere(quad, radioEsfera, 40, 40);
-            gluDeleteQuadric(quad);
+            gluQuadricTexture(quadric_obj, GL_TRUE);
+            gluSphere(quadric_obj, radioEsfera, 40, 40);
+            
         glPopMatrix(); 
 
-        
         if (anilloTextureID != 0) {
             glRotatef(inclinacionAnillo, 1.0f, 0.0f, 0.1f); 
             dibujarAnillo(radioEsfera + 0.15f, radioEsfera + 0.55f, 100, anilloTextureID);
@@ -370,7 +369,7 @@ void display() {
     // Venus
     dibujarPlaneta(0.35, 3.5, orbitas[1], textureIDs[2]);
     // Tierra
-    dibujarPlaneta(0.40, 2.9, orbitas[2], textureIDs[3]);
+    dibujarPlaneta(0.40, 2.9, orbitas[2], textureIDs[3], 0, 0, 66.5f);
      // Marte
     dibujarPlaneta(0.30, 2.4, orbitas[3], textureIDs[4]);
      // Júpiter
@@ -416,6 +415,8 @@ void init() {
     cargarTexturas();
     inicializarOrbitas();
     inicializarCinturon();
+
+    quadric_obj = gluNewQuadric();
 }
 
 int main(int argc, char** argv) {
