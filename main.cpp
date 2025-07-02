@@ -97,12 +97,11 @@ void inicializarOrbitas() {
 }
 
 void cargarTexturas() {
-    // <-- MODIFICADO: Añadido el archivo de la textura del anillo
     const char* filenames[] = {
         "./img/Sol.bmp", "./img/0PMercurio.bmp", "./img/1PVenus.bmp",
         "./img/2PTierra.bmp", "./img/3PMarte.bmp", "./img/4PJupiter.bmp",
         "./img/5PSaturno.bmp", "./img/6PUrano.bmp", "./img/7PNeptuno.bmp",
-        "./img/AnilloSaturno.bmp"
+        "./img/rings.bmp"
     };
     glGenTextures(10, textureIDs); // <-- MODIFICADO: a 10 texturas
     for (int i = 0; i < 10; ++i) { // <-- MODIFICADO: el bucle ahora va hasta 10
@@ -110,16 +109,11 @@ void cargarTexturas() {
     }
 }
 
-// <-- NUEVO: Función para dibujar el anillo
 void dibujarAnillo(float radioInterior, float radioExterior, int num_segmentos, GLuint textureID) {
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, textureID);
     
-    // Para que la textura del anillo se vea bien y no se vea negra por la iluminación
-    glDisable(GL_LIGHTING);
-    // Podrías habilitar blending si tu textura tiene transparencia
-    // glEnable(GL_BLEND);
-    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_LIGHTING);    
 
     glBegin(GL_QUAD_STRIP);
     for (int i = 0; i <= num_segmentos; i++) {
@@ -137,7 +131,6 @@ void dibujarAnillo(float radioInterior, float radioExterior, int num_segmentos, 
     }
     glEnd();
     
-    // glDisable(GL_BLEND);
     glEnable(GL_LIGHTING);
 }
 
@@ -226,7 +219,7 @@ void display() {
     dibujarPlaneta(0.30, 2.4, orbitas[3], textureIDs[4]);
      // Júpiter
     dibujarPlaneta(0.80, 1.3, orbitas[4], textureIDs[5]);
-    // Saturno <-- MODIFICADO: Se usa la nueva función
+    // Saturno
     dibujarPlanetaConAnillo(0.70, 0.9, orbitas[5], textureIDs[6], textureIDs[9]);
     // Urano
     dibujarPlaneta(0.60, 0.6, orbitas[6], textureIDs[7]);
