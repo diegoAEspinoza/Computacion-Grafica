@@ -11,16 +11,16 @@ struct Orbita {
 };
 
 // VARIABLES GLOBALES
-Orbita orbitas[8]; 
-GLuint textureIDs[9]; 
+Orbita orbitas[8];
+GLuint textureIDs[10]; // <-- MODIFICADO: Aumentado a 10 para la textura del anillo
 
-float tiempo = 0.0f; 
+float tiempo = 0.0f;
 
 void calcularOrbita(float rx, float rz, int num_segmentos, Orbita &orbita) {
     orbita.vertices.clear();
     orbita.radioX = rx;
     orbita.radioZ = rz;
-    
+
     for (int i = 0; i <= num_segmentos; i++) {
         float angulo = 2.0f * M_PI * float(i) / float(num_segmentos);
         float x = cos(angulo) * rx;
@@ -31,11 +31,10 @@ void calcularOrbita(float rx, float rz, int num_segmentos, Orbita &orbita) {
     }
 }
 
-// Dibuja una órbita
 void dibujarOrbita(const Orbita &orbita) {
-    glDisable(GL_LIGHTING); 
-    glDisable(GL_TEXTURE_2D); 
-    
+    glDisable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
+
     glColor3f(0.6f, 0.6f, 0.6f);
     glBegin(GL_LINE_LOOP);
     for (size_t i = 0; i < orbita.vertices.size(); i += 3) {
@@ -44,8 +43,6 @@ void dibujarOrbita(const Orbita &orbita) {
     glEnd();
 }
 
-
-// Función para cargar imágenes BMP
 unsigned char* loadBMP(const char* filename, int& width, int& height) {
     FILE* file = fopen(filename, "rb");
 
@@ -59,21 +56,20 @@ unsigned char* loadBMP(const char* filename, int& width, int& height) {
 
     fseek(file, 54, SEEK_SET);
 
-    int imageSize = width * height * 3; 
+    int imageSize = width * height * 3;
     unsigned char* data = new unsigned char[imageSize];
 
     fread(data, 1, imageSize, file);
 
     for(int i = 0; i < imageSize; i += 3) {
-        std::swap(data[i], data[i + 2]); 
+        std::swap(data[i], data[i + 2]);
     }
 
-    fclose(file); 
+    fclose(file);
 
     return data;
 }
 
-// Función para crear la textura
 void crearTexture(const char* filename, GLuint& textureID) {
     int width, height;
 
@@ -89,14 +85,10 @@ void crearTexture(const char* filename, GLuint& textureID) {
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 
-    delete[] data; 
+    delete[] data;
 }
 
-
-// Iniciacion de Texturas
-
 void inicializarOrbitas() {
-    // Órbitas para Mercurio, Venus, Tierra, Marte, Júpiter, Saturno, Urano, Neptuno
     float radiosX[] = {2.5, 4.0, 6.0, 8.0, 11.0, 14.0, 17.0, 20.0};
     float radiosZ[] = {2.0, 3.5, 5.5, 7.5, 10.0, 13.0, 16.0, 19.0};
     for (int i = 0; i < 8; i++) {
@@ -105,24 +97,58 @@ void inicializarOrbitas() {
 }
 
 void cargarTexturas() {
+    // <-- MODIFICADO: Añadido el archivo de la textura del anillo
     const char* filenames[] = {
         "./img/Sol.bmp", "./img/0PMercurio.bmp", "./img/1PVenus.bmp",
         "./img/2PTierra.bmp", "./img/3PMarte.bmp", "./img/4PJupiter.bmp",
-        "./img/5PSaturno.bmp", "./img/6PUrano.bmp", "./img/7PNeptuno.bmp"
+        "./img/5PSaturno.bmp", "./img/6PUrano.bmp", "./img/7PNeptuno.bmp",
+        "./img/AnilloSaturno.bmp"
     };
-    glGenTextures(9, textureIDs);
-    for (int i = 0; i < 9; ++i) {
+    glGenTextures(10, textureIDs); // <-- MODIFICADO: a 10 texturas
+    for (int i = 0; i < 10; ++i) { // <-- MODIFICADO: el bucle ahora va hasta 10
         crearTexture(filenames[i], textureIDs[i]);
     }
 }
 
+// <-- NUEVO: Función para dibujar el anillo
+void dibujarAnillo(float radioInterior, float radioExterior, int num_segmentos, GLuint textureID) {
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    
+    // Para que la textura del anillo se vea bien y no se vea negra por la iluminación
+    glDisable(GL_LIGHTING);
+    // Podrías habilitar blending si tu textura tiene transparencia
+    // glEnable(GL_BLEND);
+    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glBegin(GL_QUAD_STRIP);
+    for (int i = 0; i <= num_segmentos; i++) {
+        float angulo = 2.0f * M_PI * float(i) / float(num_segmentos);
+        float x = cos(angulo);
+        float z = sin(angulo);
+
+        // Vértice exterior
+        glTexCoord2f(float(i) / float(num_segmentos), 1.0f);
+        glVertex3f(x * radioExterior, 0.0f, z * radioExterior);
+
+        // Vértice interior
+        glTexCoord2f(float(i) / float(num_segmentos), 0.0f);
+        glVertex3f(x * radioInterior, 0.0f, z * radioInterior);
+    }
+    glEnd();
+    
+    // glDisable(GL_BLEND);
+    glEnable(GL_LIGHTING);
+}
+
+
 void dibujarPlaneta(
     float radioEsfera, float velocidadOrbita,
     const Orbita& orbita, GLuint textureID) {
-    
+
     glEnable(GL_LIGHTING);
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, textureID); 
+    glBindTexture(GL_TEXTURE_2D, textureID);
 
     glPushMatrix();
         float angulo = tiempo * velocidadOrbita;
@@ -130,7 +156,7 @@ void dibujarPlaneta(
         float z = sin(angulo) * orbita.radioZ;
         glTranslatef(x, 0.0f, z);
 
-        glRotatef(tiempo * 50.0f, 0.0f, 1.0f, 0.0f); 
+        glRotatef(tiempo * 50.0f, 0.0f, 1.0f, 0.0f);
 
         GLUquadric* quad = gluNewQuadric();
         gluQuadricTexture(quad, GL_TRUE);
@@ -139,17 +165,49 @@ void dibujarPlaneta(
     glPopMatrix();
 }
 
+// <-- NUEVO: Función especializada para dibujar a Saturno con su anillo
+void dibujarPlanetaConAnillo(
+    float radioEsfera, float velocidadOrbita, const Orbita& orbita,
+    GLuint planetaTextureID, GLuint anilloTextureID) {
+    
+    glPushMatrix(); // Guarda la matriz de vista del universo
+        // Calcula la posición en la órbita (igual que en dibujarPlaneta)
+        float angulo = tiempo * velocidadOrbita;
+        float x = cos(angulo) * orbita.radioX;
+        float z = sin(angulo) * orbita.radioZ;
+        glTranslatef(x, 0.0f, z);
+
+        // --- Dibujar el Planeta (Saturno) ---
+        glPushMatrix(); // Guarda la matriz de la posición de Saturno
+            glEnable(GL_LIGHTING);
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, planetaTextureID);
+            glRotatef(tiempo * 50.0f, 0.0f, 1.0f, 0.0f); // Rotación del planeta sobre su eje
+            GLUquadric* quad = gluNewQuadric();
+            gluQuadricTexture(quad, GL_TRUE);
+            gluSphere(quad, radioEsfera, 40, 40);
+            gluDeleteQuadric(quad);
+        glPopMatrix(); // Restaura la matriz a la posición de Saturno
+
+        // --- Dibujar el Anillo ---
+        // El anillo no debe rotar sobre el eje Y como el planeta, pero sí debe inclinarse.
+        glRotatef(25.0f, 1.0f, 0.0f, 0.1f); // Inclinación del anillo (25 grados sobre el eje X)
+        dibujarAnillo(0.85f, 1.25f, 100, anilloTextureID);
+
+    glPopMatrix(); // Restaura la matriz de vista del universo
+}
+
 // Dibujado
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
-    gluLookAt(0, 30, 25, 0, 0, 0, 0, 1, 0);
+    gluLookAt(0, 45, 30, 0, 0, 0, 0, 1, 0);
 
     for (int i = 0; i < 8; i++) {
         dibujarOrbita(orbitas[i]);
     }
-    
-    // El Sol 
+
+    // El Sol
     glEnable(GL_LIGHTING);
     glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, textureIDs[0]);
@@ -159,21 +217,21 @@ void display() {
         gluDeleteQuadric(quad);
 
     // Mercurio
-    dibujarPlaneta(0.20, 4.7, orbitas[0], textureIDs[1]); 
+    dibujarPlaneta(0.20, 4.7, orbitas[0], textureIDs[1]);
     // Venus
-    dibujarPlaneta(0.35, 3.5, orbitas[1], textureIDs[2]); 
+    dibujarPlaneta(0.35, 3.5, orbitas[1], textureIDs[2]);
     // Tierra
     dibujarPlaneta(0.40, 2.9, orbitas[2], textureIDs[3]);
-     // Marte 
+     // Marte
     dibujarPlaneta(0.30, 2.4, orbitas[3], textureIDs[4]);
      // Júpiter
     dibujarPlaneta(0.80, 1.3, orbitas[4], textureIDs[5]);
-    // Saturno
-    dibujarPlaneta(0.70, 0.9, orbitas[5], textureIDs[6]); 
+    // Saturno <-- MODIFICADO: Se usa la nueva función
+    dibujarPlanetaConAnillo(0.70, 0.9, orbitas[5], textureIDs[6], textureIDs[9]);
     // Urano
-    dibujarPlaneta(0.60, 0.6, orbitas[6], textureIDs[7]); 
+    dibujarPlaneta(0.60, 0.6, orbitas[6], textureIDs[7]);
     // Neptuno
-    dibujarPlaneta(0.55, 0.5, orbitas[7], textureIDs[8]); 
+    dibujarPlaneta(0.55, 0.5, orbitas[7], textureIDs[8]);
 
     glutSwapBuffers();
 }
@@ -188,27 +246,24 @@ void reshape(int w, int h) {
 }
 
 void update(int value) {
-    tiempo += 0.005f; // Aumenta el tiempo para mover los planetas
-    glutPostRedisplay(); // Pide a GLUT que vuelva a dibujar la escena
-    glutTimerFunc(16, update, 0); // Llama a update de nuevo en ~60 FPS
+    tiempo += 0.005f;
+    glutPostRedisplay();
+    glutTimerFunc(16, update, 0);
 }
 
 void init() {
-    glClearColor(0.05f, 0.05f, 0.1f, 1.0f); 
+    glClearColor(0.05f, 0.05f, 0.1f, 1.0f);
     glEnable(GL_DEPTH_TEST);
-    
-    // Configuración de la iluminación (se hace una sola vez)
+
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
-    GLfloat lightPos[] = { 0.0, 0.0, 0.0, 1.0 }; // Luz en el centro (el Sol)
+    GLfloat lightPos[] = { 0.0, 0.0, 0.0, 1.0 };
     glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
-    GLfloat ambient[] = { 0.3, 0.3, 0.3, 1.0 }; // Una luz ambiental suave
+    GLfloat ambient[] = { 0.3, 0.3, 0.3, 1.0 };
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
 
-    // Configuración de las texturas
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-    // Cargar y preparar todo
     cargarTexturas();
     inicializarOrbitas();
 }
@@ -219,11 +274,11 @@ int main(int argc, char** argv) {
     glutInitWindowSize(1280, 720);
     glutCreateWindow("Sistema Solar Animado");
 
-    init(); 
+    init();
 
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
-    glutTimerFunc(25, update, 0); // Inicia el bucle de animación
+    glutTimerFunc(25, update, 0);
 
     glutMainLoop();
     return 0;
