@@ -228,7 +228,7 @@ void inicializarOrbitas() {
     float radiosX[] = {2.5, 4.0, 6.0, 8.0, 12.0, 15.0, 18.0, 21.0};
     float radiosZ[] = {2.0, 3.5, 5.5, 7.5, 11.0, 14.0, 17.0, 20.0};
     for (int i = 0; i < 8; i++) {
-        calcularOrbita(radiosX[i], radiosZ[i], 100, orbitas[i]);
+        calcularOrbita(radiosX[i], radiosZ[i], 50, orbitas[i]);
     }
 }
 
