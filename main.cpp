@@ -493,10 +493,8 @@ void init() {
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
     glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
 
-    // Permitir que las texturas se vean afectadas por la iluminación
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     
-    // Habilitar el seguimiento del color del material
     glEnable(GL_COLOR_MATERIAL);
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 
@@ -539,7 +537,6 @@ int main(int argc, char** argv) {
 
     glutMainLoop();
 
-    // Liberar el objeto cuádrico al final
     gluDeleteQuadric(quadric_obj);
     
     return 0;
